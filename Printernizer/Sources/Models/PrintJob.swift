@@ -6,8 +6,8 @@ struct PrintJob: Identifiable, Codable, Equatable {
     let progress: Double
     let elapsedSeconds: Int
     let estimatedTotalSeconds: Int?
-    let currentLayer: Int
-    let totalLayers: Int
+    let currentLayer: Int?
+    let totalLayers: Int?
     let filamentUsedMm: Double
 
     var remainingSeconds: Int? {
