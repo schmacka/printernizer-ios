@@ -1,0 +1,588 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A1000001229F0001 /* PrinternizerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0002 /* PrinternizerApp.swift */; };
+		A1000001229F0003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0004 /* ContentView.swift */; };
+		A1000001229F0005 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000001229F0006 /* Assets.xcassets */; };
+		A1000001229F0007 /* Printer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0008 /* Printer.swift */; };
+		A1000001229F0009 /* PrintJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F000A /* PrintJob.swift */; };
+		A1000001229F000B /* PrinterListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F000C /* PrinterListView.swift */; };
+		A1000001229F000D /* PrinterDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F000E /* PrinterDetailView.swift */; };
+		A1000001229F000F /* PrintJobView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0010 /* PrintJobView.swift */; };
+		A1000001229F0011 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0012 /* SettingsView.swift */; };
+		A1000001229F0013 /* PrinterCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0014 /* PrinterCardView.swift */; };
+		A1000001229F0015 /* ProgressRingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0016 /* ProgressRingView.swift */; };
+		A1000001229F0017 /* PrinterListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0018 /* PrinterListViewModel.swift */; };
+		A1000001229F0019 /* PrinterDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F001A /* PrinterDetailViewModel.swift */; };
+		A1000001229F001B /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F001C /* APIService.swift */; };
+		A1000001229F001D /* WebSocketService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F001E /* WebSocketService.swift */; };
+		A1000001229F001F /* PrinternizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0020 /* PrinternizerTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A1000001229F0021 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1000001229F0022 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A1000001229F0023;
+			remoteInfo = Printernizer;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		A1000001229F0002 /* PrinternizerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrinternizerApp.swift; sourceTree = "<group>"; };
+		A1000001229F0004 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A1000001229F0006 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A1000001229F0008 /* Printer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Printer.swift; sourceTree = "<group>"; };
+		A1000001229F000A /* PrintJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintJob.swift; sourceTree = "<group>"; };
+		A1000001229F000C /* PrinterListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrinterListView.swift; sourceTree = "<group>"; };
+		A1000001229F000E /* PrinterDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrinterDetailView.swift; sourceTree = "<group>"; };
+		A1000001229F0010 /* PrintJobView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintJobView.swift; sourceTree = "<group>"; };
+		A1000001229F0012 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A1000001229F0014 /* PrinterCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrinterCardView.swift; sourceTree = "<group>"; };
+		A1000001229F0016 /* ProgressRingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressRingView.swift; sourceTree = "<group>"; };
+		A1000001229F0018 /* PrinterListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrinterListViewModel.swift; sourceTree = "<group>"; };
+		A1000001229F001A /* PrinterDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrinterDetailViewModel.swift; sourceTree = "<group>"; };
+		A1000001229F001C /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
+		A1000001229F001E /* WebSocketService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketService.swift; sourceTree = "<group>"; };
+		A1000001229F0020 /* PrinternizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrinternizerTests.swift; sourceTree = "<group>"; };
+		A1000001229F0024 /* Printernizer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Printernizer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1000001229F0025 /* PrinternizerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrinternizerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A1000001229F0026 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1000001229F0027 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A1000001229F0028 = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F0029 /* Printernizer */,
+				A1000001229F002A /* PrinternizerTests */,
+				A1000001229F002B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A1000001229F0029 /* Printernizer */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F002C /* Sources */,
+				A1000001229F002D /* Resources */,
+			);
+			path = Printernizer;
+			sourceTree = "<group>";
+		};
+		A1000001229F002A /* PrinternizerTests */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F0020 /* PrinternizerTests.swift */,
+			);
+			path = PrinternizerTests;
+			sourceTree = "<group>";
+		};
+		A1000001229F002B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F0024 /* Printernizer.app */,
+				A1000001229F0025 /* PrinternizerTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A1000001229F002C /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F002E /* App */,
+				A1000001229F002F /* Models */,
+				A1000001229F0030 /* Views */,
+				A1000001229F0031 /* ViewModels */,
+				A1000001229F0032 /* Services */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		A1000001229F002D /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F0006 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		A1000001229F002E /* App */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F0002 /* PrinternizerApp.swift */,
+				A1000001229F0004 /* ContentView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		A1000001229F002F /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F0008 /* Printer.swift */,
+				A1000001229F000A /* PrintJob.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A1000001229F0030 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F0033 /* Printer */,
+				A1000001229F0034 /* PrintJob */,
+				A1000001229F0035 /* Settings */,
+				A1000001229F0036 /* Components */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A1000001229F0031 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F0018 /* PrinterListViewModel.swift */,
+				A1000001229F001A /* PrinterDetailViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		A1000001229F0032 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F001C /* APIService.swift */,
+				A1000001229F001E /* WebSocketService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		A1000001229F0033 /* Printer */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F000C /* PrinterListView.swift */,
+				A1000001229F000E /* PrinterDetailView.swift */,
+			);
+			path = Printer;
+			sourceTree = "<group>";
+		};
+		A1000001229F0034 /* PrintJob */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F0010 /* PrintJobView.swift */,
+			);
+			path = PrintJob;
+			sourceTree = "<group>";
+		};
+		A1000001229F0035 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F0012 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		A1000001229F0036 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F0014 /* PrinterCardView.swift */,
+				A1000001229F0016 /* ProgressRingView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A1000001229F0023 /* Printernizer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1000001229F0037 /* Build configuration list for PBXNativeTarget "Printernizer" */;
+			buildPhases = (
+				A1000001229F0038 /* Sources */,
+				A1000001229F0026 /* Frameworks */,
+				A1000001229F0039 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Printernizer;
+			productName = Printernizer;
+			productReference = A1000001229F0024 /* Printernizer.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A1000001229F003A /* PrinternizerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1000001229F003B /* Build configuration list for PBXNativeTarget "PrinternizerTests" */;
+			buildPhases = (
+				A1000001229F003C /* Sources */,
+				A1000001229F0027 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A1000001229F003D /* PBXTargetDependency */,
+			);
+			name = PrinternizerTests;
+			productName = PrinternizerTests;
+			productReference = A1000001229F0025 /* PrinternizerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A1000001229F0022 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					A1000001229F0023 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+					A1000001229F003A = {
+						CreatedOnToolsVersion = 15.0;
+						TestTargetID = A1000001229F0023;
+					};
+				};
+			};
+			buildConfigurationList = A1000001229F003E /* Build configuration list for PBXProject "Printernizer" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A1000001229F0028;
+			productRefGroup = A1000001229F002B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A1000001229F0023 /* Printernizer */,
+				A1000001229F003A /* PrinternizerTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A1000001229F0039 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1000001229F0005 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A1000001229F0038 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1000001229F0001 /* PrinternizerApp.swift in Sources */,
+				A1000001229F0003 /* ContentView.swift in Sources */,
+				A1000001229F0007 /* Printer.swift in Sources */,
+				A1000001229F0009 /* PrintJob.swift in Sources */,
+				A1000001229F000B /* PrinterListView.swift in Sources */,
+				A1000001229F000D /* PrinterDetailView.swift in Sources */,
+				A1000001229F000F /* PrintJobView.swift in Sources */,
+				A1000001229F0011 /* SettingsView.swift in Sources */,
+				A1000001229F0013 /* PrinterCardView.swift in Sources */,
+				A1000001229F0015 /* ProgressRingView.swift in Sources */,
+				A1000001229F0017 /* PrinterListViewModel.swift in Sources */,
+				A1000001229F0019 /* PrinterDetailViewModel.swift in Sources */,
+				A1000001229F001B /* APIService.swift in Sources */,
+				A1000001229F001D /* WebSocketService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1000001229F003C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1000001229F001F /* PrinternizerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A1000001229F003D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A1000001229F0023 /* Printernizer */;
+			targetProxy = A1000001229F0021 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		A1000001229F003F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A1000001229F0040 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A1000001229F0041 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.printernizer.ios;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A1000001229F0042 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.printernizer.ios;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		A1000001229F0043 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.printernizer.ios.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Printernizer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Printernizer";
+			};
+			name = Debug;
+		};
+		A1000001229F0044 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.printernizer.ios.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Printernizer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Printernizer";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A1000001229F003E /* Build configuration list for PBXProject "Printernizer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1000001229F003F /* Debug */,
+				A1000001229F0040 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1000001229F0037 /* Build configuration list for PBXNativeTarget "Printernizer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1000001229F0041 /* Debug */,
+				A1000001229F0042 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1000001229F003B /* Build configuration list for PBXNativeTarget "PrinternizerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1000001229F0043 /* Debug */,
+				A1000001229F0044 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A1000001229F0022 /* Project object */;
+}
