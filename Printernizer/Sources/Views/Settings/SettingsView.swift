@@ -8,6 +8,7 @@ struct SettingsView: View {
 
     @State private var isTesting = false
     @State private var connectionStatus: ConnectionStatus?
+    @State private var showQRScanner = false
 
     enum ConnectionStatus {
         case success
@@ -32,6 +33,12 @@ struct SettingsView: View {
                             apiService.baseURL = newValue
                             connectionStatus = nil
                         }
+
+                    Button {
+                        showQRScanner = true
+                    } label: {
+                        Label("Scan QR Code", systemImage: "qrcode.viewfinder")
+                    }
 
                     HStack {
                         Button {
@@ -92,6 +99,13 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
+            .sheet(isPresented: $showQRScanner) {
+                QRScannerView { scannedURL in
+                    serverURL = scannedURL
+                    apiService.baseURL = scannedURL
+                    connectionStatus = nil
+                }
+            }
         }
     }
 
