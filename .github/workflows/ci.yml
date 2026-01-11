@@ -10,6 +10,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  checks: write
+
 jobs:
   build-and-test:
     name: Build and Test
@@ -64,6 +68,7 @@ jobs:
       - name: Test Report Summary
         uses: dorny/test-reporter@v1
         if: always()
+        continue-on-error: true
         with:
           name: Test Results
           path: TestResults.xml
