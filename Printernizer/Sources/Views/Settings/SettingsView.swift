@@ -5,6 +5,9 @@ struct SettingsView: View {
     @AppStorage("serverURL") private var serverURL = ""
     @AppStorage("refreshInterval") private var refreshInterval = 5.0
     @AppStorage("notificationsEnabled") private var notificationsEnabled = true
+    @AppStorage("notifyPrintCompleted") private var notifyPrintCompleted = true
+    @AppStorage("notifyPrintFailed") private var notifyPrintFailed = true
+    @AppStorage("notifyPrinterOffline") private var notifyPrinterOffline = true
 
     @State private var isTesting = false
     @State private var connectionStatus: ConnectionStatus?
@@ -85,9 +88,9 @@ struct SettingsView: View {
                     Toggle("Enable Notifications", isOn: $notificationsEnabled)
 
                     if notificationsEnabled {
-                        Toggle("Print Completed", isOn: .constant(true))
-                        Toggle("Print Failed", isOn: .constant(true))
-                        Toggle("Printer Offline", isOn: .constant(true))
+                        Toggle("Print Completed", isOn: $notifyPrintCompleted)
+                        Toggle("Print Failed", isOn: $notifyPrintFailed)
+                        Toggle("Printer Offline", isOn: $notifyPrinterOffline)
                     }
                 }
 
