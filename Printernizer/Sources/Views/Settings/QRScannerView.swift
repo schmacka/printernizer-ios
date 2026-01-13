@@ -303,7 +303,5 @@ extension QRScannerViewController: AVCaptureMetadataOutputObjectsDelegate {
 }
 
 #Preview {
-    QRScannerView { url in
-        print("Scanned: \(url)")
-    }
+    QRScannerView { _ in }
 }

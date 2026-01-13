@@ -119,8 +119,7 @@ final class WebSocketService: ObservableObject {
                 self.handleMessage(message)
                 self.receiveMessage()
 
-            case .failure(let error):
-                print("WebSocket error: \(error)")
+            case .failure:
                 self.handleDisconnection()
             }
         }
@@ -153,7 +152,7 @@ final class WebSocketService: ObservableObject {
                 self?.lastMessage = parsed
             }
         } catch {
-            print("WebSocket parse error: \(error)")
+            // JSON parsing failed, ignore malformed message
         }
     }
 
@@ -235,7 +234,6 @@ final class WebSocketService: ObservableObject {
         lastMessage = .connectionStatus(false)
 
         guard reconnectAttempts < maxReconnectAttempts else {
-            print("Max reconnection attempts reached")
             return
         }
 
@@ -249,10 +247,6 @@ final class WebSocketService: ObservableObject {
 
     func send(_ message: String) {
         let wsMessage = URLSessionWebSocketTask.Message.string(message)
-        webSocketTask?.send(wsMessage) { error in
-            if let error {
-                print("WebSocket send error: \(error)")
-            }
-        }
+        webSocketTask?.send(wsMessage) { _ in }
     }
 }
