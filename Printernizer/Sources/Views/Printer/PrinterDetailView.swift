@@ -5,6 +5,7 @@ struct PrinterDetailView: View {
     @StateObject private var viewModel = PrinterDetailViewModel()
     @StateObject private var cameraViewModel = CameraStatusViewModel()
     @EnvironmentObject private var apiService: APIService
+    @EnvironmentObject private var webSocketService: WebSocketService
 
     var body: some View {
         ScrollView {
@@ -18,6 +19,9 @@ struct PrinterDetailView: View {
                 // Camera section
                 if let cameraStatus = cameraViewModel.cameraStatus, cameraStatus.isAvailable {
                     cameraSection(status: cameraStatus)
+                } else if let cameraStatus = cameraViewModel.cameraStatus,
+                          let errorMessage = cameraStatus.errorMessage {
+                    cameraUnavailableSection(message: errorMessage)
                 }
 
                 temperatureSection
@@ -29,8 +33,14 @@ struct PrinterDetailView: View {
         .navigationTitle(printer.name)
         .navigationBarTitleDisplayMode(.large)
         .task {
+            webSocketService.subscribeToPrinter(printer.id)
             await viewModel.loadDetails(for: printer, using: apiService)
             await cameraViewModel.loadCameraStatus(printerId: printer.id)
+        }
+        .onReceive(webSocketService.$lastMessage) { message in
+            if case .printerStatus(let printerId, let data) = message, printerId == printer.id {
+                viewModel.handlePrinterStatusUpdate(data)
+            }
         }
     }
 
@@ -58,6 +68,20 @@ struct PrinterDetailView: View {
 
             CameraPreviewView(printerId: printer.id, cameraStatus: status)
         }
+    }
+
+    private func cameraUnavailableSection(message: String) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: "video.slash")
+                .foregroundStyle(.secondary)
+            Text(message)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Spacer()
+        }
+        .padding()
+        .background(.regularMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 
     private var statusSection: some View {
@@ -173,5 +197,6 @@ struct PrinterDetailView: View {
     NavigationStack {
         PrinterDetailView(printer: .preview)
             .environmentObject(APIService())
+            .environmentObject(WebSocketService())
     }
 }

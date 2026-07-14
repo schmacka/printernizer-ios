@@ -40,6 +40,25 @@ enum PrinterStatus: String, Codable, CaseIterable {
     }
 }
 
+extension PrinterStatus {
+    /// Maps a backend status value (online, offline, printing, paused,
+    /// error, unknown) to the app's status.
+    init(apiValue: String) {
+        switch apiValue.lowercased() {
+        case "online", "idle":
+            self = .idle
+        case "printing":
+            self = .printing
+        case "paused":
+            self = .paused
+        case "error":
+            self = .error
+        default:
+            self = .offline
+        }
+    }
+}
+
 extension Printer {
     static let preview = Printer(
         id: "1",

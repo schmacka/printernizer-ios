@@ -29,4 +29,21 @@ final class PrinterListViewModel: ObservableObject {
             showError = true
         }
     }
+
+    /// Applies a live printer_status event to the matching list row.
+    func handlePrinterStatus(printerId: String, data: PrinterStatusData) {
+        guard let index = printers.firstIndex(where: { $0.id == printerId }) else { return }
+
+        let existing = printers[index]
+        let status = data.status.map(PrinterStatus.init(apiValue:)) ?? existing.status
+        let progress = data.progress.map { $0 / 100.0 } ?? existing.currentJobProgress
+
+        printers[index] = Printer(
+            id: existing.id,
+            name: existing.name,
+            status: status,
+            model: existing.model,
+            currentJobProgress: status == .printing || status == .paused ? progress : nil
+        )
+    }
 }

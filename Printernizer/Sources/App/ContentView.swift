@@ -17,9 +17,9 @@ struct ContentView: View {
                 }
                 .tag(1)
 
-            FileListView()
+            LibraryListView()
                 .tabItem {
-                    Label("Files", systemImage: "folder")
+                    Label("Library", systemImage: "books.vertical")
                 }
                 .tag(2)
 
@@ -41,4 +41,5 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .environmentObject(APIService())
+        .environmentObject(WebSocketService())
 }

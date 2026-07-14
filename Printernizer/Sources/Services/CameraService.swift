@@ -56,23 +56,16 @@ final class CameraService: ObservableObject {
     private let decoder: JSONDecoder
     private let encoder: JSONEncoder
 
-    var baseURL: String {
-        UserDefaults.standard.string(forKey: "serverURL") ?? ""
-    }
-
     init() {
         self.session = URLSession.shared
-        self.decoder = JSONDecoder()
-        self.decoder.keyDecodingStrategy = .convertFromSnakeCase
-        self.encoder = JSONEncoder()
-        self.encoder.keyEncodingStrategy = .convertToSnakeCase
+        self.decoder = APIConfiguration.makeDecoder()
+        self.encoder = APIConfiguration.makeEncoder()
     }
 
     // MARK: - Camera Status
 
     func getCameraStatus(printerId: String) async throws -> CameraStatus {
-        guard !baseURL.isEmpty,
-              let url = URL(string: "\(baseURL)/api/v1/printers/\(printerId)/camera/status") else {
+        guard let url = APIConfiguration.url("printers/\(printerId)/camera/status") else {
             throw CameraError.invalidURL
         }
 
@@ -90,8 +83,7 @@ final class CameraService: ObservableObject {
 
     func getPreviewImage(printerId: String, useExternal: Bool = false) async throws -> UIImage {
         let endpoint = useExternal ? "external-preview" : "preview"
-        guard !baseURL.isEmpty,
-              let url = URL(string: "\(baseURL)/api/v1/printers/\(printerId)/camera/\(endpoint)") else {
+        guard let url = APIConfiguration.url("printers/\(printerId)/camera/\(endpoint)") else {
             throw CameraError.invalidURL
         }
 
@@ -118,8 +110,7 @@ final class CameraService: ObservableObject {
     // MARK: - Snapshots
 
     func takeSnapshot(printerId: String, notes: String? = nil) async throws -> SnapshotResponse {
-        guard !baseURL.isEmpty,
-              let url = URL(string: "\(baseURL)/api/v1/printers/\(printerId)/camera/snapshot") else {
+        guard let url = APIConfiguration.url("printers/\(printerId)/camera/snapshot") else {
             throw CameraError.invalidURL
         }
 
@@ -141,8 +132,11 @@ final class CameraService: ObservableObject {
     }
 
     func listSnapshots(printerId: String, limit: Int = 50, offset: Int = 0) async throws -> [SnapshotResponse] {
-        guard !baseURL.isEmpty,
-              let url = URL(string: "\(baseURL)/api/v1/printers/\(printerId)/snapshots?limit=\(limit)&offset=\(offset)") else {
+        let queryItems = [
+            URLQueryItem(name: "limit", value: String(limit)),
+            URLQueryItem(name: "offset", value: String(offset))
+        ]
+        guard let url = APIConfiguration.url("printers/\(printerId)/snapshots", queryItems: queryItems) else {
             throw CameraError.invalidURL
         }
 
@@ -157,8 +151,9 @@ final class CameraService: ObservableObject {
     }
 
     func getSnapshotImageURL(snapshotId: Int) -> URL? {
-        guard !baseURL.isEmpty else { return nil }
-        return URL(string: "\(baseURL)/api/v1/snapshots/\(snapshotId)/download")
+        // The camera router is mounted under /printers, so snapshot
+        // downloads live at /api/v1/printers/snapshots/{id}/download.
+        APIConfiguration.url("printers/snapshots/\(snapshotId)/download")
     }
 
     func downloadSnapshotImage(snapshotId: Int) async throws -> UIImage {

@@ -27,12 +27,15 @@ struct MaterialResponse: Codable, Identifiable {
 
 struct MaterialStats: Codable {
     let totalSpools: Int
-    let activeSpools: Int
-    let lowStockSpools: Int
     let totalWeight: Double
-    let totalValue: Double
-    let byType: [String: Int]
-    let byBrand: [String: Int]
+    let totalRemaining: Double?
+    let totalValue: Double?
+    let remainingValue: Double?
+    let byType: [String: Double]?
+    let byBrand: [String: Double]?
+    let byColor: [String: Double]?
+    let lowStock: Int?
+    let consumptionRate: Double?
 }
 
 struct MaterialTypes: Codable {
@@ -70,16 +73,10 @@ final class MaterialService: ObservableObject {
     private let decoder: JSONDecoder
     private let encoder: JSONEncoder
 
-    var baseURL: String {
-        UserDefaults.standard.string(forKey: "serverURL") ?? ""
-    }
-
     init() {
         self.session = URLSession.shared
-        self.decoder = JSONDecoder()
-        self.decoder.keyDecodingStrategy = .convertFromSnakeCase
-        self.encoder = JSONEncoder()
-        self.encoder.keyEncodingStrategy = .convertToSnakeCase
+        self.decoder = APIConfiguration.makeDecoder()
+        self.encoder = APIConfiguration.makeEncoder()
     }
 
     func listMaterials(
@@ -87,7 +84,6 @@ final class MaterialService: ObservableObject {
         brand: String? = nil,
         lowStock: Bool = false
     ) async throws -> [MaterialResponse] {
-        var components = URLComponents(string: "\(baseURL)/api/v1/materials")
         var queryItems: [URLQueryItem] = []
 
         if let materialType {
@@ -100,11 +96,7 @@ final class MaterialService: ObservableObject {
             queryItems.append(URLQueryItem(name: "low_stock", value: "true"))
         }
 
-        if !queryItems.isEmpty {
-            components?.queryItems = queryItems
-        }
-
-        guard let url = components?.url else {
+        guard let url = APIConfiguration.url("materials", queryItems: queryItems) else {
             throw MaterialError.invalidURL
         }
 
@@ -119,8 +111,7 @@ final class MaterialService: ObservableObject {
     }
 
     func getMaterial(id: String) async throws -> MaterialResponse {
-        guard !baseURL.isEmpty,
-              let url = URL(string: "\(baseURL)/api/v1/materials/\(id)") else {
+        guard let url = APIConfiguration.url("materials/\(id)") else {
             throw MaterialError.invalidURL
         }
 
@@ -135,8 +126,7 @@ final class MaterialService: ObservableObject {
     }
 
     func getStats() async throws -> MaterialStats {
-        guard !baseURL.isEmpty,
-              let url = URL(string: "\(baseURL)/api/v1/materials/stats") else {
+        guard let url = APIConfiguration.url("materials/stats") else {
             throw MaterialError.invalidURL
         }
 
@@ -151,8 +141,7 @@ final class MaterialService: ObservableObject {
     }
 
     func getTypes() async throws -> MaterialTypes {
-        guard !baseURL.isEmpty,
-              let url = URL(string: "\(baseURL)/api/v1/materials/types") else {
+        guard let url = APIConfiguration.url("materials/types") else {
             throw MaterialError.invalidURL
         }
 
@@ -167,8 +156,7 @@ final class MaterialService: ObservableObject {
     }
 
     func createMaterial(_ material: MaterialCreateRequest) async throws -> MaterialResponse {
-        guard !baseURL.isEmpty,
-              let url = URL(string: "\(baseURL)/api/v1/materials") else {
+        guard let url = APIConfiguration.url("materials") else {
             throw MaterialError.invalidURL
         }
 
@@ -188,8 +176,7 @@ final class MaterialService: ObservableObject {
     }
 
     func updateMaterial(id: String, update: MaterialUpdateRequest) async throws -> MaterialResponse {
-        guard !baseURL.isEmpty,
-              let url = URL(string: "\(baseURL)/api/v1/materials/\(id)") else {
+        guard let url = APIConfiguration.url("materials/\(id)") else {
             throw MaterialError.invalidURL
         }
 
@@ -208,9 +195,29 @@ final class MaterialService: ObservableObject {
         return try decoder.decode(MaterialResponse.self, from: data)
     }
 
+    /// Downloads the inventory export (csv or excel) to a temporary
+    /// file suitable for the share sheet.
+    func exportMaterials(format: MaterialExportFormat) async throws -> URL {
+        let queryItems = [URLQueryItem(name: "format", value: format.rawValue)]
+        guard let url = APIConfiguration.url("materials/export", queryItems: queryItems) else {
+            throw MaterialError.invalidURL
+        }
+
+        let (data, response) = try await session.data(from: url)
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw MaterialError.serverError
+        }
+
+        let fileURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("materials-export.\(format.fileExtension)")
+        try data.write(to: fileURL, options: .atomic)
+        return fileURL
+    }
+
     func deleteMaterial(id: String) async throws {
-        guard !baseURL.isEmpty,
-              let url = URL(string: "\(baseURL)/api/v1/materials/\(id)") else {
+        guard let url = APIConfiguration.url("materials/\(id)") else {
             throw MaterialError.invalidURL
         }
 
@@ -222,6 +229,25 @@ final class MaterialService: ObservableObject {
         guard let httpResponse = response as? HTTPURLResponse,
               (200...299).contains(httpResponse.statusCode) else {
             throw MaterialError.serverError
+        }
+    }
+}
+
+enum MaterialExportFormat: String {
+    case csv
+    case excel
+
+    var fileExtension: String {
+        switch self {
+        case .csv: return "csv"
+        case .excel: return "xlsx"
+        }
+    }
+
+    var displayName: String {
+        switch self {
+        case .csv: return "CSV"
+        case .excel: return "Excel"
         }
     }
 }

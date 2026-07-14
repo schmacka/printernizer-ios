@@ -2,9 +2,10 @@ name: iOS CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, "claude/**"]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -17,14 +18,11 @@ permissions:
 jobs:
   build-and-test:
     name: Build and Test
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_15.2.app/Contents/Developer
 
       - name: Show Xcode Version
         run: xcodebuild -version
@@ -39,18 +37,20 @@ jobs:
 
       - name: Build
         run: |
+          set -o pipefail
           xcodebuild build \
             -scheme Printernizer \
-            -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.2' \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO \
             | xcpretty --color
 
       - name: Run Tests
         run: |
+          set -o pipefail
           xcodebuild test \
             -scheme Printernizer \
-            -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.2' \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO \
             -resultBundlePath TestResults.xcresult \
@@ -77,7 +77,7 @@ jobs:
 
   lint:
     name: SwiftLint
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
       - name: Checkout
