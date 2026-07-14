@@ -67,17 +67,6 @@ final class PrinterDetailViewModel: ObservableObject {
         }
     }
 
-    func homeAxes(using apiService: APIService) async {
-        guard let printer else { return }
-
-        do {
-            try await apiService.homeAxes(printerId: printer.id)
-        } catch {
-            errorMessage = error.localizedDescription
-            showError = true
-        }
-    }
-
     // MARK: - WebSocket Update Handling
 
     func handlePrinterStatusUpdate(_ data: PrinterStatusData) {

@@ -70,16 +70,10 @@ final class MaterialService: ObservableObject {
     private let decoder: JSONDecoder
     private let encoder: JSONEncoder
 
-    var baseURL: String {
-        UserDefaults.standard.string(forKey: "serverURL") ?? ""
-    }
-
     init() {
         self.session = URLSession.shared
-        self.decoder = JSONDecoder()
-        self.decoder.keyDecodingStrategy = .convertFromSnakeCase
-        self.encoder = JSONEncoder()
-        self.encoder.keyEncodingStrategy = .convertToSnakeCase
+        self.decoder = APIConfiguration.makeDecoder()
+        self.encoder = APIConfiguration.makeEncoder()
     }
 
     func listMaterials(
@@ -87,7 +81,6 @@ final class MaterialService: ObservableObject {
         brand: String? = nil,
         lowStock: Bool = false
     ) async throws -> [MaterialResponse] {
-        var components = URLComponents(string: "\(baseURL)/api/v1/materials")
         var queryItems: [URLQueryItem] = []
 
         if let materialType {
@@ -100,11 +93,7 @@ final class MaterialService: ObservableObject {
             queryItems.append(URLQueryItem(name: "low_stock", value: "true"))
         }
 
-        if !queryItems.isEmpty {
-            components?.queryItems = queryItems
-        }
-
-        guard let url = components?.url else {
+        guard let url = APIConfiguration.url("materials", queryItems: queryItems) else {
             throw MaterialError.invalidURL
         }
 
@@ -119,8 +108,7 @@ final class MaterialService: ObservableObject {
     }
 
     func getMaterial(id: String) async throws -> MaterialResponse {
-        guard !baseURL.isEmpty,
-              let url = URL(string: "\(baseURL)/api/v1/materials/\(id)") else {
+        guard let url = APIConfiguration.url("materials/\(id)") else {
             throw MaterialError.invalidURL
         }
 
@@ -135,8 +123,7 @@ final class MaterialService: ObservableObject {
     }
 
     func getStats() async throws -> MaterialStats {
-        guard !baseURL.isEmpty,
-              let url = URL(string: "\(baseURL)/api/v1/materials/stats") else {
+        guard let url = APIConfiguration.url("materials/stats") else {
             throw MaterialError.invalidURL
         }
 
@@ -151,8 +138,7 @@ final class MaterialService: ObservableObject {
     }
 
     func getTypes() async throws -> MaterialTypes {
-        guard !baseURL.isEmpty,
-              let url = URL(string: "\(baseURL)/api/v1/materials/types") else {
+        guard let url = APIConfiguration.url("materials/types") else {
             throw MaterialError.invalidURL
         }
 
@@ -167,8 +153,7 @@ final class MaterialService: ObservableObject {
     }
 
     func createMaterial(_ material: MaterialCreateRequest) async throws -> MaterialResponse {
-        guard !baseURL.isEmpty,
-              let url = URL(string: "\(baseURL)/api/v1/materials") else {
+        guard let url = APIConfiguration.url("materials") else {
             throw MaterialError.invalidURL
         }
 
@@ -188,8 +173,7 @@ final class MaterialService: ObservableObject {
     }
 
     func updateMaterial(id: String, update: MaterialUpdateRequest) async throws -> MaterialResponse {
-        guard !baseURL.isEmpty,
-              let url = URL(string: "\(baseURL)/api/v1/materials/\(id)") else {
+        guard let url = APIConfiguration.url("materials/\(id)") else {
             throw MaterialError.invalidURL
         }
 
@@ -209,8 +193,7 @@ final class MaterialService: ObservableObject {
     }
 
     func deleteMaterial(id: String) async throws {
-        guard !baseURL.isEmpty,
-              let url = URL(string: "\(baseURL)/api/v1/materials/\(id)") else {
+        guard let url = APIConfiguration.url("materials/\(id)") else {
             throw MaterialError.invalidURL
         }
 

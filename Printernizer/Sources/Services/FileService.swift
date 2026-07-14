@@ -43,14 +43,9 @@ final class FileService: ObservableObject {
     private let session: URLSession
     private let decoder: JSONDecoder
 
-    var baseURL: String {
-        UserDefaults.standard.string(forKey: "serverURL") ?? ""
-    }
-
     init() {
         self.session = URLSession.shared
-        self.decoder = JSONDecoder()
-        self.decoder.keyDecodingStrategy = .convertFromSnakeCase
+        self.decoder = APIConfiguration.makeDecoder()
     }
 
     func listFiles(
@@ -62,7 +57,6 @@ final class FileService: ObservableObject {
         page: Int = 1,
         limit: Int = 50
     ) async throws -> FileListResponse {
-        var components = URLComponents(string: "\(baseURL)/api/v1/files")
         var queryItems: [URLQueryItem] = [
             URLQueryItem(name: "page", value: String(page)),
             URLQueryItem(name: "limit", value: String(limit))
@@ -84,9 +78,7 @@ final class FileService: ObservableObject {
             queryItems.append(URLQueryItem(name: "search", value: search))
         }
 
-        components?.queryItems = queryItems
-
-        guard let url = components?.url else {
+        guard let url = APIConfiguration.url("files", queryItems: queryItems) else {
             throw FileError.invalidURL
         }
 
@@ -101,8 +93,7 @@ final class FileService: ObservableObject {
     }
 
     func getFile(id: String) async throws -> FileResponse {
-        guard !baseURL.isEmpty,
-              let url = URL(string: "\(baseURL)/api/v1/files/\(id)") else {
+        guard let url = APIConfiguration.url("files/\(id)") else {
             throw FileError.invalidURL
         }
 
@@ -117,8 +108,7 @@ final class FileService: ObservableObject {
     }
 
     func getThumbnail(fileId: String) async throws -> UIImage {
-        guard !baseURL.isEmpty,
-              let url = URL(string: "\(baseURL)/api/v1/files/\(fileId)/thumbnail") else {
+        guard let url = APIConfiguration.url("files/\(fileId)/thumbnail") else {
             throw FileError.invalidURL
         }
 
@@ -137,8 +127,7 @@ final class FileService: ObservableObject {
     }
 
     func deleteFile(id: String) async throws {
-        guard !baseURL.isEmpty,
-              let url = URL(string: "\(baseURL)/api/v1/files/\(id)") else {
+        guard let url = APIConfiguration.url("files/\(id)") else {
             throw FileError.invalidURL
         }
 

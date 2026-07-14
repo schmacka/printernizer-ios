@@ -95,10 +95,10 @@ struct SettingsView: View {
                 }
 
                 Section("About") {
-                    LabeledContent("Version", value: "1.0.0")
-                    LabeledContent("Build", value: "1")
+                    LabeledContent("Version", value: appVersion)
+                    LabeledContent("Build", value: buildNumber)
 
-                    Link("View on GitHub", destination: URL(string: "https://github.com/printernizer")!)
+                    Link("View on GitHub", destination: URL(string: "https://github.com/schmacka/printernizer-ios")!)
                 }
             }
             .navigationTitle("Settings")
@@ -110,6 +110,14 @@ struct SettingsView: View {
                 }
             }
         }
+    }
+
+    private var appVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Unknown"
+    }
+
+    private var buildNumber: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "Unknown"
     }
 
     private func testConnection() async {

@@ -46,14 +46,9 @@ final class JobService: ObservableObject {
     private let session: URLSession
     private let decoder: JSONDecoder
 
-    var baseURL: String {
-        UserDefaults.standard.string(forKey: "serverURL") ?? ""
-    }
-
     init() {
         self.session = URLSession.shared
-        self.decoder = JSONDecoder()
-        self.decoder.keyDecodingStrategy = .convertFromSnakeCase
+        self.decoder = APIConfiguration.makeDecoder()
     }
 
     func listJobs(
@@ -63,7 +58,6 @@ final class JobService: ObservableObject {
         page: Int = 1,
         limit: Int = 50
     ) async throws -> JobListResponse {
-        var components = URLComponents(string: "\(baseURL)/api/v1/jobs")
         var queryItems: [URLQueryItem] = [
             URLQueryItem(name: "page", value: String(page)),
             URLQueryItem(name: "limit", value: String(limit))
@@ -79,9 +73,7 @@ final class JobService: ObservableObject {
             queryItems.append(URLQueryItem(name: "is_business", value: String(isBusiness)))
         }
 
-        components?.queryItems = queryItems
-
-        guard let url = components?.url else {
+        guard let url = APIConfiguration.url("jobs", queryItems: queryItems) else {
             throw JobError.invalidURL
         }
 
@@ -96,8 +88,7 @@ final class JobService: ObservableObject {
     }
 
     func getJob(id: String) async throws -> JobResponse {
-        guard !baseURL.isEmpty,
-              let url = URL(string: "\(baseURL)/api/v1/jobs/\(id)") else {
+        guard let url = APIConfiguration.url("jobs/\(id)") else {
             throw JobError.invalidURL
         }
 
@@ -112,8 +103,7 @@ final class JobService: ObservableObject {
     }
 
     func cancelJob(id: String) async throws {
-        guard !baseURL.isEmpty,
-              let url = URL(string: "\(baseURL)/api/v1/jobs/\(id)/cancel") else {
+        guard let url = APIConfiguration.url("jobs/\(id)/cancel") else {
             throw JobError.invalidURL
         }
 

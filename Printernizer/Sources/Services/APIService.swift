@@ -2,12 +2,6 @@ import Foundation
 
 // MARK: - API Response Models
 
-/// Response wrapper for successful API calls
-struct SuccessResponse<T: Decodable>: Decodable {
-    let success: Bool
-    let data: T
-}
-
 /// Current job information from backend
 struct APICurrentJob: Decodable {
     let name: String
@@ -180,12 +174,11 @@ final class APIService: ObservableObject {
     init() {
         self.baseURL = UserDefaults.standard.string(forKey: "serverURL") ?? ""
         self.session = URLSession.shared
-        self.decoder = JSONDecoder()
-        self.decoder.keyDecodingStrategy = .convertFromSnakeCase
+        self.decoder = APIConfiguration.makeDecoder()
     }
 
     func fetchPrinters() async throws -> [Printer] {
-        let response: APIPrinterListResponse = try await request("v1/printers")
+        let response: APIPrinterListResponse = try await request("printers")
         return response.printers.map { apiPrinter in
             Printer(
                 id: apiPrinter.id,
@@ -198,7 +191,7 @@ final class APIService: ObservableObject {
     }
 
     func fetchPrinterDetails(printerId: String) async throws -> PrinterDetails {
-        let response: APIPrinterDetailsResponse = try await request("v1/printers/\(printerId)/details")
+        let response: APIPrinterDetailsResponse = try await request("printers/\(printerId)/details")
 
         // Extract temperature data
         let hotendTemp = response.currentStatus?.temperatures?.nozzle?.current ?? 0
@@ -246,25 +239,19 @@ final class APIService: ObservableObject {
     }
 
     func pausePrint(printerId: String) async throws {
-        try await postCommand("v1/printers/\(printerId)/pause")
+        try await postCommand("printers/\(printerId)/pause")
     }
 
     func resumePrint(printerId: String) async throws {
-        try await postCommand("v1/printers/\(printerId)/resume")
+        try await postCommand("printers/\(printerId)/resume")
     }
 
     func stopPrint(printerId: String) async throws {
-        try await postCommand("v1/printers/\(printerId)/stop")
-    }
-
-    func homeAxes(printerId: String) async throws {
-        // Note: Backend doesn't have a dedicated home endpoint
-        // This would need to be added to the backend or removed from iOS
-        throw APIError.serverError(501)
+        try await postCommand("printers/\(printerId)/stop")
     }
 
     func testConnection() async throws -> Bool {
-        guard !baseURL.isEmpty, let url = URL(string: "\(baseURL)/api/v1/system/health") else {
+        guard let url = APIConfiguration.url("system/health") else {
             throw APIError.invalidURL
         }
 
@@ -286,7 +273,7 @@ final class APIService: ObservableObject {
     // MARK: - Private Helpers
 
     private func postCommand(_ endpoint: String) async throws {
-        guard !baseURL.isEmpty, let url = URL(string: "\(baseURL)/api/\(endpoint)") else {
+        guard let url = APIConfiguration.url(endpoint) else {
             throw APIError.invalidURL
         }
 
@@ -342,7 +329,7 @@ final class APIService: ObservableObject {
     }
 
     private func request<T: Decodable>(_ endpoint: String, method: String = "GET") async throws -> T {
-        guard !baseURL.isEmpty, let url = URL(string: "\(baseURL)/api/\(endpoint)") else {
+        guard let url = APIConfiguration.url(endpoint) else {
             throw APIError.invalidURL
         }
 
