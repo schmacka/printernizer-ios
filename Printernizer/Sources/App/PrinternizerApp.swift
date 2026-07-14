@@ -4,6 +4,7 @@ import SwiftUI
 struct PrinternizerApp: App {
     @StateObject private var apiService = APIService()
     @StateObject private var webSocketService = WebSocketService()
+    @StateObject private var notificationService = NotificationService()
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
@@ -11,6 +12,9 @@ struct PrinternizerApp: App {
             ContentView()
                 .environmentObject(apiService)
                 .environmentObject(webSocketService)
+                .onAppear {
+                    notificationService.bind(to: webSocketService)
+                }
                 .onChange(of: scenePhase) { _, newPhase in
                     switch newPhase {
                     case .active:

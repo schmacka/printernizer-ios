@@ -1,5 +1,7 @@
 # Printernizer iOS Modernization Plan
 
+> **Status (July 2026): executed.** All phases below are implemented on this branch. The API contract was verified against the backend source (~v2.42.0) rather than a live instance; notable corrections found during execution: the WebSocket path `/ws` was already correct (the docs were wrong), `/api/v1/system/health` never existed (now `/api/v1/health`), the snapshot download path was wrong, and `MaterialStats` decoded fields the backend doesn't send. Only `printer_status` events are actually pushed over WebSocket by current backends, so notifications and live updates are driven from those. Deliberately deferred: camera diagnostics endpoint (response schema not stable enough to bind), triggering slicing from the app, timelapses, orders/analytics.
+
 **Goal:** Bring the iOS companion app up to date with the current Printernizer backend release (v2.41.x, July 2026) and restore the feature parity the app was designed for.
 
 **Status baseline:** The app currently targets a backend API surface from roughly the v2.1x era. The backend has since shipped ~25 minor releases, including a Library system that supersedes the Files API, slicer integration, tags, a reworked jobs response, and new system-info endpoints. In addition, several parts of the app are wired incompletely (WebSocket never connected, refresh-interval setting unused).
