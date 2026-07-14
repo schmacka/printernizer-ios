@@ -87,8 +87,9 @@ ContentView uses TabView with 5 tabs:
 
 The app connects to a Printernizer backend (FastAPI) on local network:
 - Base URL stored in `@AppStorage("serverURL")`
-- REST endpoints: `/api/v1/printers/`, `/api/v1/jobs/`, `/api/v1/files/`, `/api/v1/materials/`
-- WebSocket: `/api/v1/ws`
+- REST endpoints: `/api/v1/printers`, `/api/v1/jobs`, `/api/v1/files`, `/api/v1/library`, `/api/v1/materials`, `/api/v1/health`, `/api/v1/system/info`
+- WebSocket: `/ws` (not under `/api/v1`); only `printer_status` events are pushed by current backends, and only for printers subscribed via `subscribe_printer`
+- All URL building goes through `APIConfiguration` (Services/APIConfiguration.swift)
 
 ## Configuration
 

@@ -151,7 +151,9 @@ final class CameraService: ObservableObject {
     }
 
     func getSnapshotImageURL(snapshotId: Int) -> URL? {
-        APIConfiguration.url("snapshots/\(snapshotId)/download")
+        // The camera router is mounted under /printers, so snapshot
+        // downloads live at /api/v1/printers/snapshots/{id}/download.
+        APIConfiguration.url("printers/snapshots/\(snapshotId)/download")
     }
 
     func downloadSnapshotImage(snapshotId: Int) async throws -> UIImage {

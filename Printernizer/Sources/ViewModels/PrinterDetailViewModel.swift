@@ -70,21 +70,17 @@ final class PrinterDetailViewModel: ObservableObject {
     // MARK: - WebSocket Update Handling
 
     func handlePrinterStatusUpdate(_ data: PrinterStatusData) {
-        if let progress = data.progress {
-            // Update current job progress if we have a job
-            if let job = currentJob {
-                // Create a new PrintJob with updated progress
-                currentJob = PrintJob(
-                    id: job.id,
-                    fileName: data.currentJob ?? job.fileName,
-                    progress: Double(progress) / 100.0,
-                    elapsedSeconds: job.elapsedSeconds,
-                    estimatedTotalSeconds: data.remainingTimeMinutes.map { $0 * 60 },
-                    currentLayer: job.currentLayer,
-                    totalLayers: job.totalLayers,
-                    filamentUsedMm: job.filamentUsedMm
-                )
-            }
+        if let progress = data.progress, let job = currentJob {
+            currentJob = PrintJob(
+                id: job.id,
+                fileName: data.currentJob ?? job.fileName,
+                progress: progress / 100.0,
+                elapsedSeconds: job.elapsedSeconds,
+                estimatedTotalSeconds: job.estimatedTotalSeconds,
+                currentLayer: job.currentLayer,
+                totalLayers: job.totalLayers,
+                filamentUsedMm: job.filamentUsedMm
+            )
         }
 
         if let bedTemp = data.temperatureBed {

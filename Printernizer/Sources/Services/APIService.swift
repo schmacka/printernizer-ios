@@ -137,6 +137,15 @@ struct PrinterStatistics {
     let totalMaterialKg: Double
 }
 
+/// Backend information from GET /api/v1/system/info
+struct SystemInfo: Decodable {
+    let version: String?
+    let environment: String?
+    let timezone: String?
+    let databaseSizeMb: Double?
+    let uptimeSeconds: Double?
+}
+
 enum APIError: LocalizedError {
     case invalidURL
     case invalidResponse
@@ -183,7 +192,7 @@ final class APIService: ObservableObject {
             Printer(
                 id: apiPrinter.id,
                 name: apiPrinter.name,
-                status: mapPrinterStatus(apiPrinter.status),
+                status: PrinterStatus(apiValue: apiPrinter.status),
                 model: formatPrinterType(apiPrinter.printerType),
                 currentJobProgress: apiPrinter.currentJob?.progress.map { Double($0) / 100.0 }
             )
@@ -250,8 +259,12 @@ final class APIService: ObservableObject {
         try await postCommand("printers/\(printerId)/stop")
     }
 
+    func fetchSystemInfo() async throws -> SystemInfo {
+        try await request("system/info")
+    }
+
     func testConnection() async throws -> Bool {
-        guard let url = APIConfiguration.url("system/health") else {
+        guard let url = APIConfiguration.url("health") else {
             throw APIError.invalidURL
         }
 
@@ -295,23 +308,6 @@ final class APIService: ObservableObject {
             throw error
         } catch {
             throw APIError.networkError(error)
-        }
-    }
-
-    private func mapPrinterStatus(_ status: String) -> PrinterStatus {
-        switch status.lowercased() {
-        case "online", "idle":
-            return .idle
-        case "printing":
-            return .printing
-        case "paused":
-            return .paused
-        case "error":
-            return .error
-        case "offline":
-            return .offline
-        default:
-            return .offline
         }
     }
 

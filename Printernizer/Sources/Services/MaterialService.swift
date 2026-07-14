@@ -27,12 +27,15 @@ struct MaterialResponse: Codable, Identifiable {
 
 struct MaterialStats: Codable {
     let totalSpools: Int
-    let activeSpools: Int
-    let lowStockSpools: Int
     let totalWeight: Double
-    let totalValue: Double
-    let byType: [String: Int]
-    let byBrand: [String: Int]
+    let totalRemaining: Double?
+    let totalValue: Double?
+    let remainingValue: Double?
+    let byType: [String: Double]?
+    let byBrand: [String: Double]?
+    let byColor: [String: Double]?
+    let lowStock: Int?
+    let consumptionRate: Double?
 }
 
 struct MaterialTypes: Codable {

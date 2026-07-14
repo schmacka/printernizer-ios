@@ -98,8 +98,8 @@ struct MaterialListView: View {
     private func statsSection(_ stats: MaterialStats) -> some View {
         Section {
             HStack(spacing: 16) {
-                StatCard(title: "Spools", value: "\(stats.activeSpools)", icon: "cylinder.fill", color: .blue)
-                StatCard(title: "Low Stock", value: "\(stats.lowStockSpools)", icon: "exclamationmark.triangle.fill", color: .orange)
+                StatCard(title: "Spools", value: "\(stats.totalSpools)", icon: "cylinder.fill", color: .blue)
+                StatCard(title: "Low Stock", value: "\(stats.lowStock ?? 0)", icon: "exclamationmark.triangle.fill", color: .orange)
                 StatCard(title: "Total", value: formatWeight(stats.totalWeight), icon: "scalemass.fill", color: .green)
             }
             .listRowInsets(EdgeInsets())

@@ -14,18 +14,21 @@ enum WebSocketMessage: Equatable {
     case connectionStatus(Bool)
 }
 
+/// Payload of a `printer_status` event. The backend sends additional
+/// fields (current_job_file_id, thumbnail info, timestamp) that the app
+/// doesn't need yet; unknown keys are ignored during decoding.
 struct PrinterStatusData: Codable, Equatable {
     let status: String?
-    let progress: Int?
+    let progress: Double?
     let currentJob: String?
     let temperatureBed: Double?
     let temperatureNozzle: Double?
-    let remainingTimeMinutes: Int?
+    let message: String?
 }
 
 struct JobUpdateData: Codable, Equatable {
     let status: String?
-    let progress: Int?
+    let progress: Double?
     let fileName: String?
 }
 
@@ -47,11 +50,10 @@ private struct WSIncomingMessage: Codable {
 
 private struct WSMessageData: Codable {
     let status: String?
-    let progress: Int?
+    let progress: Double?
     let currentJob: String?
     let temperatureBed: Double?
     let temperatureNozzle: Double?
-    let remainingTimeMinutes: Int?
     let fileName: String?
     let printerId: String?
     let message: String?
@@ -67,46 +69,58 @@ private struct WSOutgoingMessage: Codable {
     }
 }
 
+/// Connects to the backend's `/ws` endpoint for real-time updates.
+/// The backend delivers `printer_status` events only for printers the
+/// client has subscribed to via `subscribe_printer`, so subscriptions
+/// are tracked and replayed after every (re)connect.
 final class WebSocketService: ObservableObject {
     @Published private(set) var isConnected = false
     @Published private(set) var lastMessage: WebSocketMessage?
 
     private var webSocketTask: URLSessionWebSocketTask?
     private let session: URLSession
-    private var baseURL: String = ""
     private var reconnectAttempts = 0
     private let maxReconnectAttempts = 5
+    private var pingTask: Task<Void, Never>?
+    private var subscribedPrinterIds: Set<String> = []
+    private var isStopped = true
 
     init() {
         self.session = URLSession(configuration: .default)
     }
 
-    func connect(to url: String) {
-        baseURL = url
+    deinit {
+        pingTask?.cancel()
+        webSocketTask?.cancel(with: .goingAway, reason: nil)
+    }
+
+    /// Connects using the server URL from settings. Safe to call again
+    /// after the URL changes; any existing connection is replaced.
+    func connect() {
+        disconnect()
+        isStopped = false
         reconnectAttempts = 0
         establishConnection()
     }
 
     func disconnect() {
+        isStopped = true
+        pingTask?.cancel()
+        pingTask = nil
         webSocketTask?.cancel(with: .goingAway, reason: nil)
         webSocketTask = nil
-        isConnected = false
+        setConnected(false)
     }
 
     private func establishConnection() {
-        guard !baseURL.isEmpty else { return }
-
-        let wsURL = baseURL
-            .replacingOccurrences(of: "https://", with: "wss://")
-            .replacingOccurrences(of: "http://", with: "ws://")
-
-        guard let url = URL(string: "\(wsURL)/ws") else { return }
+        guard !isStopped, let url = APIConfiguration.websocketURL() else { return }
 
         webSocketTask = session.webSocketTask(with: url)
         webSocketTask?.resume()
 
-        isConnected = true
-        lastMessage = .connectionStatus(true)
+        setConnected(true)
+        resubscribeAll()
+        startPingLoop()
         receiveMessage()
     }
 
@@ -116,6 +130,7 @@ final class WebSocketService: ObservableObject {
 
             switch result {
             case .success(let message):
+                self.reconnectAttempts = 0
                 self.handleMessage(message)
                 self.receiveMessage()
 
@@ -165,7 +180,7 @@ final class WebSocketService: ObservableObject {
                 currentJob: msg.data?.currentJob,
                 temperatureBed: msg.data?.temperatureBed,
                 temperatureNozzle: msg.data?.temperatureNozzle,
-                remainingTimeMinutes: msg.data?.remainingTimeMinutes
+                message: msg.data?.message
             )
             return .printerStatus(printerId: msg.printerId ?? "", data: statusData)
 
@@ -204,18 +219,34 @@ final class WebSocketService: ObservableObject {
     // MARK: - Subscription Management
 
     func subscribeToPrinter(_ printerId: String) {
-        let message = WSOutgoingMessage(type: "subscribe_printer", printerId: printerId)
-        sendJSON(message)
+        guard subscribedPrinterIds.insert(printerId).inserted else { return }
+        sendJSON(WSOutgoingMessage(type: "subscribe_printer", printerId: printerId))
     }
 
     func unsubscribeFromPrinter(_ printerId: String) {
-        let message = WSOutgoingMessage(type: "unsubscribe_printer", printerId: printerId)
-        sendJSON(message)
+        subscribedPrinterIds.remove(printerId)
+        sendJSON(WSOutgoingMessage(type: "unsubscribe_printer", printerId: printerId))
     }
 
     func sendPing() {
-        let message = WSOutgoingMessage(type: "ping")
-        sendJSON(message)
+        sendJSON(WSOutgoingMessage(type: "ping"))
+    }
+
+    private func resubscribeAll() {
+        for printerId in subscribedPrinterIds {
+            sendJSON(WSOutgoingMessage(type: "subscribe_printer", printerId: printerId))
+        }
+    }
+
+    private func startPingLoop() {
+        pingTask?.cancel()
+        pingTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(30))
+                guard !Task.isCancelled else { break }
+                self?.sendPing()
+            }
+        }
     }
 
     private func sendJSON<T: Encodable>(_ object: T) {
@@ -230,10 +261,11 @@ final class WebSocketService: ObservableObject {
     }
 
     private func handleDisconnection() {
-        isConnected = false
-        lastMessage = .connectionStatus(false)
+        pingTask?.cancel()
+        pingTask = nil
+        setConnected(false)
 
-        guard reconnectAttempts < maxReconnectAttempts else {
+        guard !isStopped, reconnectAttempts < maxReconnectAttempts else {
             return
         }
 
@@ -242,6 +274,14 @@ final class WebSocketService: ObservableObject {
 
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
             self?.establishConnection()
+        }
+    }
+
+    private func setConnected(_ connected: Bool) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self, self.isConnected != connected else { return }
+            self.isConnected = connected
+            self.lastMessage = .connectionStatus(connected)
         }
     }
 

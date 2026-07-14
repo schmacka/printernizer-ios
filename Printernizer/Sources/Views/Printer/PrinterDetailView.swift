@@ -5,6 +5,7 @@ struct PrinterDetailView: View {
     @StateObject private var viewModel = PrinterDetailViewModel()
     @StateObject private var cameraViewModel = CameraStatusViewModel()
     @EnvironmentObject private var apiService: APIService
+    @EnvironmentObject private var webSocketService: WebSocketService
 
     var body: some View {
         ScrollView {
@@ -29,8 +30,14 @@ struct PrinterDetailView: View {
         .navigationTitle(printer.name)
         .navigationBarTitleDisplayMode(.large)
         .task {
+            webSocketService.subscribeToPrinter(printer.id)
             await viewModel.loadDetails(for: printer, using: apiService)
             await cameraViewModel.loadCameraStatus(printerId: printer.id)
+        }
+        .onReceive(webSocketService.$lastMessage) { message in
+            if case .printerStatus(let printerId, let data) = message, printerId == printer.id {
+                viewModel.handlePrinterStatusUpdate(data)
+            }
         }
     }
 
@@ -173,5 +180,6 @@ struct PrinterDetailView: View {
     NavigationStack {
         PrinterDetailView(printer: .preview)
             .environmentObject(APIService())
+            .environmentObject(WebSocketService())
     }
 }
