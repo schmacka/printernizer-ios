@@ -1,11 +1,10 @@
 import SwiftUI
 
-struct FileListView: View {
-    @StateObject private var viewModel = FileListViewModel()
+struct LibraryListView: View {
+    @StateObject private var viewModel = LibraryListViewModel()
     @State private var searchText = ""
-    @State private var selectedFile: FileResponse?
-    @State private var showDeleteConfirmation = false
-    @State private var fileToDelete: FileResponse?
+    @State private var selectedFile: LibraryFile?
+    @State private var roleFilter: LibraryRoleFilter = .all
 
     private let columns = [
         GridItem(.adaptive(minimum: 150, maximum: 200), spacing: 12)
@@ -17,21 +16,40 @@ struct FileListView: View {
                 if viewModel.isLoading && viewModel.files.isEmpty {
                     ProgressView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if viewModel.files.isEmpty {
+                } else if filteredFiles.isEmpty {
                     ContentUnavailableView(
-                        "No Files",
-                        systemImage: "doc.text",
-                        description: Text("Files from your printers will appear here.")
+                        "No Library Files",
+                        systemImage: "books.vertical",
+                        description: Text("Models and print files from your printers, watch folders, and uploads will appear here.")
                     )
                 } else {
                     fileGrid
                 }
             }
-            .navigationTitle("Files")
-            .searchable(text: $searchText, prompt: "Search files")
+            .navigationTitle("Library")
+            .searchable(text: $searchText, prompt: "Search library")
             .onChange(of: searchText) { _, newValue in
                 Task {
-                    await viewModel.searchFiles(query: newValue.isEmpty ? nil : newValue)
+                    await viewModel.search(query: newValue)
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        ForEach(LibraryRoleFilter.allCases, id: \.self) { filter in
+                            Button {
+                                roleFilter = filter
+                            } label: {
+                                if roleFilter == filter {
+                                    Label(filter.displayName, systemImage: "checkmark")
+                                } else {
+                                    Text(filter.displayName)
+                                }
+                            }
+                        }
+                    } label: {
+                        Label("Filter", systemImage: "line.3.horizontal.decrease.circle")
+                    }
                 }
             }
             .refreshable {
@@ -42,24 +60,13 @@ struct FileListView: View {
             }
             .sheet(item: $selectedFile) { file in
                 NavigationStack {
-                    FileDetailView(file: file) {
-                        fileToDelete = file
-                        showDeleteConfirmation = true
-                    }
-                }
-            }
-            .confirmationDialog("Delete File?", isPresented: $showDeleteConfirmation) {
-                Button("Delete", role: .destructive) {
-                    if let file = fileToDelete {
+                    LibraryFileDetailView(file: file) {
                         Task {
                             await viewModel.deleteFile(file)
                             selectedFile = nil
                         }
                     }
                 }
-                Button("Cancel", role: .cancel) { }
-            } message: {
-                Text("Are you sure you want to delete this file?")
             }
             .alert("Error", isPresented: $viewModel.showError) {
                 Button("OK", role: .cancel) { }
@@ -69,11 +76,22 @@ struct FileListView: View {
         }
     }
 
+    private var filteredFiles: [LibraryFile] {
+        switch roleFilter {
+        case .all:
+            return viewModel.files
+        case .models:
+            return viewModel.files.filter { $0.isModel }
+        case .printFiles:
+            return viewModel.files.filter { $0.isPrintFile }
+        }
+    }
+
     private var fileGrid: some View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 12) {
-                ForEach(viewModel.files) { file in
-                    FileCardView(file: file)
+                ForEach(filteredFiles) { file in
+                    LibraryFileCardView(file: file)
                         .onTapGesture {
                             selectedFile = file
                         }
@@ -94,28 +112,43 @@ struct FileListView: View {
     }
 }
 
-// MARK: - File Card View
+// MARK: - Role Filter
 
-struct FileCardView: View {
-    let file: FileResponse
+enum LibraryRoleFilter: CaseIterable {
+    case all
+    case models
+    case printFiles
+
+    var displayName: String {
+        switch self {
+        case .all: return "All Files"
+        case .models: return "Models"
+        case .printFiles: return "Print Files"
+        }
+    }
+}
+
+// MARK: - Library File Card
+
+struct LibraryFileCardView: View {
+    let file: LibraryFile
 
     @State private var thumbnailImage: UIImage?
     @State private var isLoadingThumbnail = true
 
-    private let fileService = FileService()
+    private let libraryService = LibraryService()
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Thumbnail or placeholder
             ZStack {
                 if let image = thumbnailImage {
                     Image(uiImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                } else if isLoadingThumbnail && file.hasThumbnail {
+                } else if isLoadingThumbnail && file.hasThumbnail == true {
                     ProgressView()
                 } else {
-                    Image(systemName: file.sourceIcon)
+                    Image(systemName: file.roleIcon)
                         .font(.largeTitle)
                         .foregroundStyle(.secondary)
                 }
@@ -125,9 +158,8 @@ struct FileCardView: View {
             .background(Color.gray.opacity(0.1))
             .clipShape(RoundedRectangle(cornerRadius: 8))
 
-            // File info
             VStack(alignment: .leading, spacing: 4) {
-                Text(file.filename)
+                Text(file.displayTitle)
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .lineLimit(2)
@@ -139,8 +171,14 @@ struct FileCardView: View {
 
                     Spacer()
 
+                    if file.isPrintFile {
+                        Image(systemName: "doc.badge.gearshape")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+
                     Circle()
-                        .fill(statusColor)
+                        .fill(file.statusColor)
                         .frame(width: 6, height: 6)
                 }
             }
@@ -149,26 +187,11 @@ struct FileCardView: View {
         .background(.regularMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .task {
-            if file.hasThumbnail {
+            if file.hasThumbnail == true {
                 await loadThumbnail()
             } else {
                 isLoadingThumbnail = false
             }
-        }
-    }
-
-    private var statusColor: Color {
-        switch file.status.lowercased() {
-        case "ready", "synced":
-            return .green
-        case "downloading", "processing":
-            return .blue
-        case "pending":
-            return .orange
-        case "error", "failed":
-            return .red
-        default:
-            return .gray
         }
     }
 
@@ -177,10 +200,9 @@ struct FileCardView: View {
         defer { isLoadingThumbnail = false }
 
         do {
-            let image = try await fileService.getThumbnail(fileId: file.id)
-            thumbnailImage = image
+            thumbnailImage = try await libraryService.getThumbnail(checksum: file.checksum)
         } catch {
-            // Failed to load thumbnail
+            // No thumbnail available
         }
     }
 }
@@ -188,13 +210,13 @@ struct FileCardView: View {
 // MARK: - View Model
 
 @MainActor
-final class FileListViewModel: ObservableObject {
-    @Published var files: [FileResponse] = []
+final class LibraryListViewModel: ObservableObject {
+    @Published var files: [LibraryFile] = []
     @Published var isLoading = false
     @Published var showError = false
     @Published var errorMessage = ""
 
-    private let fileService = FileService()
+    private let libraryService = LibraryService()
     private var currentPage = 1
     private var totalPages = 1
     private var currentSearch: String?
@@ -204,31 +226,25 @@ final class FileListViewModel: ObservableObject {
     }
 
     func loadFiles() async {
-        isLoading = true
-        currentPage = 1
         currentSearch = nil
-
-        do {
-            let response = try await fileService.listFiles(page: 1)
-            files = response.files
-            totalPages = response.pagination.totalPages
-        } catch {
-            errorMessage = error.localizedDescription
-            showError = true
-        }
-
-        isLoading = false
+        await reload()
     }
 
-    func searchFiles(query: String?) async {
+    func search(query: String) async {
+        // The backend requires at least 2 characters; treat shorter
+        // input as "no search".
+        currentSearch = query.count >= 2 ? query : nil
+        await reload()
+    }
+
+    private func reload() async {
         isLoading = true
         currentPage = 1
-        currentSearch = query
 
         do {
-            let response = try await fileService.listFiles(search: query, page: 1)
+            let response = try await libraryService.listFiles(search: currentSearch, page: 1)
             files = response.files
-            totalPages = response.pagination.totalPages
+            totalPages = response.pagination?.totalPages ?? 1
         } catch {
             errorMessage = error.localizedDescription
             showError = true
@@ -244,9 +260,9 @@ final class FileListViewModel: ObservableObject {
         currentPage += 1
 
         do {
-            let response = try await fileService.listFiles(search: currentSearch, page: currentPage)
+            let response = try await libraryService.listFiles(search: currentSearch, page: currentPage)
             files.append(contentsOf: response.files)
-            totalPages = response.pagination.totalPages
+            totalPages = response.pagination?.totalPages ?? totalPages
         } catch {
             currentPage -= 1
             errorMessage = error.localizedDescription
@@ -256,10 +272,10 @@ final class FileListViewModel: ObservableObject {
         isLoading = false
     }
 
-    func deleteFile(_ file: FileResponse) async {
+    func deleteFile(_ file: LibraryFile) async {
         do {
-            try await fileService.deleteFile(id: file.id)
-            files.removeAll { $0.id == file.id }
+            try await libraryService.deleteFile(checksum: file.checksum)
+            files.removeAll { $0.checksum == file.checksum }
         } catch {
             errorMessage = error.localizedDescription
             showError = true
@@ -268,5 +284,5 @@ final class FileListViewModel: ObservableObject {
 }
 
 #Preview {
-    FileListView()
+    LibraryListView()
 }
