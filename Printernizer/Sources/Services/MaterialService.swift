@@ -195,6 +195,27 @@ final class MaterialService: ObservableObject {
         return try decoder.decode(MaterialResponse.self, from: data)
     }
 
+    /// Downloads the inventory export (csv or excel) to a temporary
+    /// file suitable for the share sheet.
+    func exportMaterials(format: MaterialExportFormat) async throws -> URL {
+        let queryItems = [URLQueryItem(name: "format", value: format.rawValue)]
+        guard let url = APIConfiguration.url("materials/export", queryItems: queryItems) else {
+            throw MaterialError.invalidURL
+        }
+
+        let (data, response) = try await session.data(from: url)
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw MaterialError.serverError
+        }
+
+        let fileURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("materials-export.\(format.fileExtension)")
+        try data.write(to: fileURL, options: .atomic)
+        return fileURL
+    }
+
     func deleteMaterial(id: String) async throws {
         guard let url = APIConfiguration.url("materials/\(id)") else {
             throw MaterialError.invalidURL
@@ -208,6 +229,25 @@ final class MaterialService: ObservableObject {
         guard let httpResponse = response as? HTTPURLResponse,
               (200...299).contains(httpResponse.statusCode) else {
             throw MaterialError.serverError
+        }
+    }
+}
+
+enum MaterialExportFormat: String {
+    case csv
+    case excel
+
+    var fileExtension: String {
+        switch self {
+        case .csv: return "csv"
+        case .excel: return "xlsx"
+        }
+    }
+
+    var displayName: String {
+        switch self {
+        case .csv: return "CSV"
+        case .excel: return "Excel"
         }
     }
 }

@@ -6,6 +6,13 @@ struct MaterialListView: View {
     @State private var showLowStockOnly = false
     @State private var showDeleteConfirmation = false
     @State private var materialToDelete: MaterialResponse?
+    @State private var exportedFile: ExportedFile?
+    @State private var isExporting = false
+
+    struct ExportedFile: Identifiable {
+        let url: URL
+        var id: String { url.absoluteString }
+    }
 
     var body: some View {
         NavigationStack {
@@ -33,9 +40,28 @@ struct MaterialListView: View {
                                     await viewModel.loadMaterials(lowStock: newValue)
                                 }
                             }
+
+                        Divider()
+
+                        Button {
+                            Task { await exportInventory(format: .csv) }
+                        } label: {
+                            Label("Export as CSV", systemImage: "square.and.arrow.up")
+                        }
+
+                        Button {
+                            Task { await exportInventory(format: .excel) }
+                        } label: {
+                            Label("Export as Excel", systemImage: "square.and.arrow.up")
+                        }
                     } label: {
-                        Label("Filter", systemImage: "line.3.horizontal.decrease.circle")
+                        if isExporting {
+                            ProgressView()
+                        } else {
+                            Label("Filter", systemImage: "line.3.horizontal.decrease.circle")
+                        }
                     }
+                    .disabled(isExporting)
                 }
             }
             .refreshable {
@@ -71,6 +97,18 @@ struct MaterialListView: View {
             } message: {
                 Text(viewModel.errorMessage)
             }
+            .sheet(item: $exportedFile) { file in
+                ShareSheetView(url: file.url)
+            }
+        }
+    }
+
+    private func exportInventory(format: MaterialExportFormat) async {
+        isExporting = true
+        defer { isExporting = false }
+
+        if let url = await viewModel.exportMaterials(format: format) {
+            exportedFile = ExportedFile(url: url)
         }
     }
 
@@ -257,6 +295,28 @@ final class MaterialListViewModel: ObservableObject {
             showError = true
         }
     }
+
+    func exportMaterials(format: MaterialExportFormat) async -> URL? {
+        do {
+            return try await materialService.exportMaterials(format: format)
+        } catch {
+            errorMessage = error.localizedDescription
+            showError = true
+            return nil
+        }
+    }
+}
+
+// MARK: - Share Sheet
+
+struct ShareSheetView: UIViewControllerRepresentable {
+    let url: URL
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: [url], applicationActivities: nil)
+    }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) { }
 }
 
 #Preview {

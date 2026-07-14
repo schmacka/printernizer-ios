@@ -19,6 +19,9 @@ struct PrinterDetailView: View {
                 // Camera section
                 if let cameraStatus = cameraViewModel.cameraStatus, cameraStatus.isAvailable {
                     cameraSection(status: cameraStatus)
+                } else if let cameraStatus = cameraViewModel.cameraStatus,
+                          let errorMessage = cameraStatus.errorMessage {
+                    cameraUnavailableSection(message: errorMessage)
                 }
 
                 temperatureSection
@@ -65,6 +68,20 @@ struct PrinterDetailView: View {
 
             CameraPreviewView(printerId: printer.id, cameraStatus: status)
         }
+    }
+
+    private func cameraUnavailableSection(message: String) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: "video.slash")
+                .foregroundStyle(.secondary)
+            Text(message)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Spacer()
+        }
+        .padding()
+        .background(.regularMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 
     private var statusSection: some View {

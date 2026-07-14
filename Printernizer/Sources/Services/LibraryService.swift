@@ -76,6 +76,19 @@ private struct LibraryPrintRequest: Codable {
     let printerId: String
 }
 
+/// A tag assigned to a library file. Only name/color are decoded;
+/// tag ids are not needed by the app.
+struct LibraryTag: Codable, Identifiable, Equatable {
+    let name: String
+    let color: String?
+
+    var id: String { name }
+}
+
+private struct FileTagsResponse: Codable {
+    let tags: [LibraryTag]
+}
+
 // MARK: - Library Service
 
 @MainActor
@@ -164,6 +177,17 @@ final class LibraryService: ObservableObject {
 
     func downloadURL(checksum: String) -> URL? {
         APIConfiguration.url("library/files/\(checksum)/download")
+    }
+
+    /// Tags assigned to a library file (served by the tags router).
+    func getTags(checksum: String) async throws -> [LibraryTag] {
+        guard let url = APIConfiguration.url("tags/file/\(checksum)") else {
+            throw LibraryError.invalidURL
+        }
+
+        let (data, response) = try await session.data(from: url)
+        try validate(response)
+        return try decoder.decode(FileTagsResponse.self, from: data).tags
     }
 
     /// Sends the file to a printer and starts the print.

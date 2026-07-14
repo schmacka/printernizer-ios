@@ -9,6 +9,7 @@ struct LibraryFileDetailView: View {
 
     @State private var thumbnailImage: UIImage?
     @State private var printFiles: [LibraryPrintFile] = []
+    @State private var tags: [LibraryTag] = []
     @State private var isLoadingPrintFiles = false
     @State private var showDeleteConfirmation = false
     @State private var showPrinterPicker = false
@@ -158,6 +159,16 @@ struct LibraryFileDetailView: View {
             if let date = file.formattedDate {
                 LabeledContent("Added", value: date)
             }
+
+            if !tags.isEmpty {
+                HStack(alignment: .top) {
+                    Text("Tags")
+                    Spacer()
+                    Text(tags.map(\.name).joined(separator: ", "))
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.trailing)
+                }
+            }
         }
     }
 
@@ -251,6 +262,8 @@ struct LibraryFileDetailView: View {
         if file.hasThumbnail == true {
             thumbnailImage = try? await libraryService.getThumbnail(checksum: file.checksum)
         }
+
+        tags = (try? await libraryService.getTags(checksum: file.checksum)) ?? []
 
         if file.isModel {
             isLoadingPrintFiles = true
