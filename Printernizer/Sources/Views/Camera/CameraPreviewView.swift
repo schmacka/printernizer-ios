@@ -133,7 +133,12 @@ final class CameraPreviewViewModel: ObservableObject {
     private var useExternal: Bool = false
     private var refreshTask: Task<Void, Never>?
     private let cameraService = CameraService()
-    private let refreshInterval: TimeInterval = 3.0 // seconds
+
+    /// User-configured refresh interval from Settings, clamped to at least 1s.
+    private var refreshInterval: TimeInterval {
+        let stored = UserDefaults.standard.double(forKey: "refreshInterval")
+        return max(stored > 0 ? stored : 5.0, 1.0)
+    }
 
     func configure(printerId: String, useExternal: Bool) {
         self.printerId = printerId
@@ -192,7 +197,7 @@ final class CameraPreviewViewModel: ObservableObject {
 
         refreshTask = Task { [weak self] in
             while !Task.isCancelled {
-                try? await Task.sleep(for: .seconds(self?.refreshInterval ?? 3.0))
+                try? await Task.sleep(for: .seconds(self?.refreshInterval ?? 5.0))
                 guard !Task.isCancelled else { break }
                 await self?.refreshPreview()
             }
