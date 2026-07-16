@@ -68,6 +68,7 @@ struct MaterialListView: View {
                 await viewModel.loadMaterials(lowStock: showLowStockOnly)
             }
             .task {
+                guard APIConfiguration.isConfigured else { return }
                 await viewModel.loadMaterials()
                 await viewModel.loadStats()
             }

@@ -33,7 +33,7 @@ struct PrinterCardView: View {
                 Text("\(Int(progress * 100))%")
                     .font(.title3)
                     .fontWeight(.semibold)
-                    .foregroundStyle(.accentColor)
+                    .foregroundStyle(Color.accentColor)
             }
 
             Image(systemName: "chevron.right")

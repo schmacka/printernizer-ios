@@ -18,7 +18,7 @@ struct PrinternizerApp: App {
                 .onChange(of: scenePhase) { _, newPhase in
                     switch newPhase {
                     case .active:
-                        if !apiService.baseURL.isEmpty {
+                        if APIConfiguration.isConfigured {
                             webSocketService.connect()
                         }
                     case .background:

@@ -56,6 +56,7 @@ struct LibraryListView: View {
                 await viewModel.loadFiles()
             }
             .task {
+                guard APIConfiguration.isConfigured else { return }
                 await viewModel.loadFiles()
             }
             .sheet(item: $selectedFile) { file in

@@ -9,7 +9,13 @@ struct PrinterListView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if viewModel.isLoading && viewModel.printers.isEmpty {
+                if !APIConfiguration.isConfigured {
+                    ContentUnavailableView(
+                        "No Server Configured",
+                        systemImage: "network.slash",
+                        description: Text("Set the server URL in Settings")
+                    )
+                } else if viewModel.isLoading && viewModel.printers.isEmpty {
                     ProgressView("Loading printers...")
                 } else if viewModel.printers.isEmpty {
                     ContentUnavailableView(
@@ -37,7 +43,8 @@ struct PrinterListView: View {
                 await viewModel.refresh(using: apiService)
             }
             .task {
-                if !apiService.baseURL.isEmpty, !webSocketService.isConnected {
+                guard APIConfiguration.isConfigured else { return }
+                if !webSocketService.isConnected {
                     webSocketService.connect()
                 }
                 await viewModel.loadPrinters(using: apiService)

@@ -167,7 +167,7 @@ extension JobResponse {
     }
 
     var formattedDate: String? {
-        guard let dateString = startedAt ?? createdAt.isEmpty ? nil : createdAt else { return nil }
+        guard let dateString = startedAt ?? (createdAt.isEmpty ? nil : createdAt) else { return nil }
 
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]

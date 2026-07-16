@@ -15,6 +15,13 @@ struct SettingsView: View {
     @State private var showQRScanner = false
     @State private var serverInfo: SystemInfo?
 
+    /// Local draft of the server URL. The TextField edits this instead of
+    /// the stored value so that typing doesn't publish through APIService
+    /// and re-render every tab on each keystroke; the draft is committed
+    /// when editing ends (submit or focus loss).
+    @State private var serverURLDraft = ""
+    @FocusState private var serverURLFieldFocused: Bool
+
     enum ConnectionStatus {
         case success
         case failure(String)
@@ -29,16 +36,18 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section("Server") {
-                    TextField("Server URL", text: $serverURL)
+                    TextField("Server URL", text: $serverURLDraft)
                         .textContentType(.URL)
                         .keyboardType(.URL)
                         .autocapitalization(.none)
                         .autocorrectionDisabled()
-                        .onChange(of: serverURL) { _, newValue in
-                            apiService.baseURL = newValue
+                        .focused($serverURLFieldFocused)
+                        .onChange(of: serverURLDraft) { _, _ in
                             connectionStatus = nil
                             serverInfo = nil
-                            webSocketService.connect()
+                        }
+                        .onSubmit {
+                            serverURLFieldFocused = false
                         }
 
                     Button {
@@ -62,7 +71,7 @@ struct SettingsView: View {
                                 }
                             }
                         }
-                        .disabled(isTesting || serverURL.isEmpty)
+                        .disabled(isTesting || serverURLDraft.isEmpty)
 
                         Spacer()
 
@@ -123,11 +132,21 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
+            .onAppear {
+                serverURLDraft = serverURL
+            }
+            .onChange(of: serverURLFieldFocused) { _, focused in
+                if !focused {
+                    commitServerURL()
+                }
+            }
             .sheet(isPresented: $showQRScanner) {
                 QRScannerView { scannedURL in
+                    serverURLDraft = scannedURL
                     serverURL = scannedURL
                     apiService.baseURL = scannedURL
                     connectionStatus = nil
+                    reconnectWebSocket()
                 }
             }
         }
@@ -153,7 +172,32 @@ struct SettingsView: View {
         return "\(minutes)m"
     }
 
+    /// Persists the edited server URL and reconnects the WebSocket.
+    /// Called when editing ends; a no-op when the URL didn't change.
+    private func commitServerURL() {
+        let trimmed = serverURLDraft.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmed != serverURL else { return }
+        serverURL = trimmed
+        apiService.baseURL = trimmed
+        connectionStatus = nil
+        serverInfo = nil
+        reconnectWebSocket()
+    }
+
+    /// Reconnects the WebSocket only when the configured URL is usable;
+    /// connecting with a malformed URL must never be attempted.
+    private func reconnectWebSocket() {
+        guard APIConfiguration.isConfigured else {
+            webSocketService.disconnect()
+            return
+        }
+        webSocketService.connect()
+    }
+
     private func testConnection() async {
+        serverURLFieldFocused = false
+        commitServerURL()
+
         isTesting = true
         connectionStatus = nil
 
@@ -162,6 +206,7 @@ struct SettingsView: View {
             connectionStatus = success ? .success : .failure("Server not responding")
             if success {
                 serverInfo = try? await apiService.fetchSystemInfo()
+                reconnectWebSocket()
             }
         } catch {
             connectionStatus = .failure(error.localizedDescription)

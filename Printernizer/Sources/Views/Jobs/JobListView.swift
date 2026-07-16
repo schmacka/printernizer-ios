@@ -48,6 +48,7 @@ struct JobListView: View {
                 await viewModel.loadJobs(status: selectedFilter.apiValue)
             }
             .task {
+                guard APIConfiguration.isConfigured else { return }
                 await viewModel.loadJobs()
             }
             .sheet(item: $selectedJob) { job in
