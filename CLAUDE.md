@@ -103,12 +103,7 @@ The app connects to a Printernizer backend (FastAPI) on local network:
 
 ## CI/CD
 
-GitHub Actions workflow (`.github/workflows/ci.yml`):
-- Builds on macOS 15 with the runner's default Xcode
-- Runs tests on an iPhone 16 simulator (latest installed iOS)
-- SwiftLint for code style
-- Test results uploaded as artifacts
-- Runs on pushes to `main` and `claude/**` branches
+The only GitHub Actions workflow is CodeQL security scanning (`.github/workflows/codeql.yml`). There is no build/test CI workflow; build and run tests locally with the commands under [Build Commands](#build-commands).
 
 ## Future Features
 
