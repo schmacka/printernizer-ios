@@ -8,6 +8,9 @@ struct MaterialListView: View {
     @State private var materialToDelete: MaterialResponse?
     @State private var exportedFile: ExportedFile?
     @State private var isExporting = false
+    @State private var showAddMaterial = false
+    @State private var editingMaterial: MaterialResponse?
+    @State private var showHistory = false
 
     struct ExportedFile: Identifiable {
         let url: URL
@@ -34,6 +37,14 @@ struct MaterialListView: View {
         .navigationTitle("Materials")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showAddMaterial = true
+                } label: {
+                    Image(systemName: "plus")
+                }
+            }
+
+            ToolbarItem(placement: .topBarTrailing) {
                 Menu {
                     Toggle("Low Stock Only", isOn: $showLowStockOnly)
                         .onChange(of: showLowStockOnly) { _, newValue in
@@ -41,6 +52,14 @@ struct MaterialListView: View {
                                 await viewModel.loadMaterials(lowStock: newValue)
                             }
                         }
+
+                    Divider()
+
+                    Button {
+                        showHistory = true
+                    } label: {
+                        Label("Consumption History", systemImage: "chart.line.downtrend.xyaxis")
+                    }
 
                     Divider()
 
@@ -65,6 +84,25 @@ struct MaterialListView: View {
                 .disabled(isExporting)
             }
         }
+        .navigationDestination(isPresented: $showHistory) {
+            ConsumptionHistoryView()
+        }
+        .sheet(isPresented: $showAddMaterial) {
+            MaterialFormView {
+                Task {
+                    await viewModel.loadMaterials(lowStock: showLowStockOnly)
+                    await viewModel.loadStats()
+                }
+            }
+        }
+        .sheet(item: $editingMaterial) { material in
+            MaterialFormView(editingMaterial: material) {
+                Task {
+                    await viewModel.loadMaterials(lowStock: showLowStockOnly)
+                    await viewModel.loadStats()
+                }
+            }
+        }
         .refreshable {
             await viewModel.loadMaterials(lowStock: showLowStockOnly)
         }
@@ -75,10 +113,23 @@ struct MaterialListView: View {
         }
         .sheet(item: $selectedMaterial) { material in
             NavigationStack {
-                MaterialDetailView(material: material) {
-                    materialToDelete = material
-                    showDeleteConfirmation = true
-                }
+                MaterialDetailView(
+                    material: material,
+                    onEdit: {
+                        selectedMaterial = nil
+                        editingMaterial = material
+                    },
+                    onDelete: {
+                        materialToDelete = material
+                        showDeleteConfirmation = true
+                    },
+                    onConsumptionRecorded: {
+                        Task {
+                            await viewModel.loadMaterials(lowStock: showLowStockOnly)
+                            await viewModel.loadStats()
+                        }
+                    }
+                )
             }
         }
         .confirmationDialog("Delete Material?", isPresented: $showDeleteConfirmation) {
@@ -138,20 +189,14 @@ struct MaterialListView: View {
         Section {
             HStack(spacing: 16) {
                 StatCard(title: "Spools", value: "\(stats.totalSpools)", icon: "cylinder.fill", color: .blue)
-                StatCard(title: "Low Stock", value: "\(stats.lowStock ?? 0)", icon: "exclamationmark.triangle.fill", color: .orange)
-                StatCard(title: "Total", value: formatWeight(stats.totalWeight), icon: "scalemass.fill", color: .green)
+                StatCard(title: "Low Stock", value: "\(stats.lowStock?.count ?? 0)", icon: "exclamationmark.triangle.fill", color: .orange)
+                StatCard(title: "Total", value: Formatters.weightKg(stats.totalWeight), icon: "scalemass.fill", color: .green)
             }
             .listRowInsets(EdgeInsets())
             .listRowBackground(Color.clear)
         }
     }
 
-    private func formatWeight(_ grams: Double) -> String {
-        if grams >= 1000 {
-            return String(format: "%.1fkg", grams / 1000)
-        }
-        return String(format: "%.0fg", grams)
-    }
 }
 
 // MARK: - Stat Card

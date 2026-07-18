@@ -30,11 +30,13 @@ Endpoints: `GET /analytics/overview`, `GET /printers`, `GET /jobs?limit=5`, `GET
 
 ## Phase 1.3 — Materials CRUD + consumption
 `MaterialService.createMaterial/updateMaterial/getTypes` already exist — UI only. Add service methods: `POST /materials/consumption`, `GET /materials/consumption/history`, `GET /materials/report`
-- [ ] `Sources/Utilities/Formatters.swift` — shared EUR `NumberFormatter`, ISO8601 date helpers, duration/weight formatters (needed again in 1.4)
-- [ ] `Views/Materials/MaterialFormView.swift` — create/edit sheet; pickers fed by `getTypes()`; `ColorPicker` → hex
-- [ ] `MaterialListView`: toolbar +, filter menu using existing `listMaterials(materialType:brand:lowStock:)` params
-- [ ] `MaterialDetailView`: Edit button, Record Consumption sheet
-- [ ] `Views/Materials/ConsumptionHistoryView.swift`
+- [x] `Sources/Utilities/Formatters.swift` — shared EUR `NumberFormatter`, ISO8601 date helpers, duration/weight formatters
+- [x] `Views/Materials/MaterialFormView.swift` — create/edit sheet; pickers fed by `getTypes()`; `ColorPicker` → hex; edit mode restricted to backend-updatable fields
+- [x] `MaterialListView`: toolbar + (add), consumption history entry, low-stock filter
+- [x] `MaterialDetailView`: Edit button, Record Consumption sheet (job picker), per-material history link
+- [x] `Views/Materials/ConsumptionHistoryView.swift` + `RecordConsumptionView.swift`
+
+Fixed along the way: `MaterialStats` DTO never decoded against the real backend (`low_stock` is a list of IDs, `by_type` is nested) so the stats header was always empty; weights are kilograms per backend contract, display updated accordingly. `MaterialCreateRequest` was missing the required `remaining_weight`.
 
 ## Phase 1.4 — Business: job creation + Orders/Customers
 Endpoints: `POST /jobs`, `PUT/DELETE /jobs/{id}`, `GET /jobs/export`; `/orders` CRUD + `POST/DELETE /orders/{id}/jobs[/{job_id}]` + `/orders/{id}/files[/{order_file_id}]`; `/customers` CRUD; `/order-sources` CRUD

@@ -2,9 +2,12 @@ import SwiftUI
 
 struct MaterialDetailView: View {
     let material: MaterialResponse
+    var onEdit: (() -> Void)?
     let onDelete: () -> Void
+    var onConsumptionRecorded: (() -> Void)?
 
     @Environment(\.dismiss) private var dismiss
+    @State private var showRecordConsumption = false
 
     var body: some View {
         ScrollView {
@@ -40,6 +43,19 @@ struct MaterialDetailView: View {
                 Button("Done") {
                     dismiss()
                 }
+            }
+
+            if let onEdit {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Edit") {
+                        onEdit()
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $showRecordConsumption) {
+            RecordConsumptionView(material: material) {
+                onConsumptionRecorded?()
             }
         }
     }
@@ -171,8 +187,8 @@ struct MaterialDetailView: View {
             Text("Cost")
                 .font(.headline)
 
-            detailRow(label: "Price per kg", value: String(format: "%.2f EUR", material.costPerKg))
-            detailRow(label: "Remaining Value", value: String(format: "%.2f EUR", material.remainingValue))
+            detailRow(label: "Price per kg", value: Formatters.eurString(material.costPerKg))
+            detailRow(label: "Remaining Value", value: Formatters.eurString(material.remainingValue))
         }
         .padding()
         .background(.regularMaterial)
@@ -195,15 +211,39 @@ struct MaterialDetailView: View {
     }
 
     private var actionsSection: some View {
-        Button(role: .destructive) {
-            onDelete()
-        } label: {
-            Label("Delete Material", systemImage: "trash")
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(.red.opacity(0.1))
-                .foregroundStyle(.red)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+        VStack(spacing: 12) {
+            Button {
+                showRecordConsumption = true
+            } label: {
+                Label("Record Consumption", systemImage: "minus.circle")
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(.blue.opacity(0.1))
+                    .foregroundStyle(.blue)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+
+            NavigationLink {
+                ConsumptionHistoryView(materialId: material.id)
+            } label: {
+                Label("Consumption History", systemImage: "chart.line.downtrend.xyaxis")
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(.gray.opacity(0.1))
+                    .foregroundStyle(.primary)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+
+            Button(role: .destructive) {
+                onDelete()
+            } label: {
+                Label("Delete Material", systemImage: "trash")
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(.red.opacity(0.1))
+                    .foregroundStyle(.red)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
         }
     }
 
@@ -235,8 +275,8 @@ struct MaterialDetailView: View {
                 brand: "Prusament",
                 color: "Galaxy Black",
                 diameter: 1.75,
-                weight: 1000,
-                remainingWeight: 750,
+                weight: 1.0,
+                remainingWeight: 0.75,
                 remainingPercentage: 75,
                 costPerKg: 25.99,
                 remainingValue: 19.49,

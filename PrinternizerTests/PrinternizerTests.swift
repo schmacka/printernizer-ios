@@ -252,29 +252,6 @@ final class APIDecodingTests: XCTestCase {
         XCTAssertEqual(response.printfiles[0].displayTitle, "benchy.gcode")
     }
 
-    func testMaterialStatsDecoding() throws {
-        let json = """
-        {
-            "total_spools": 12,
-            "total_weight": 9500.0,
-            "total_remaining": 6200.0,
-            "total_value": 240.0,
-            "remaining_value": 155.0,
-            "by_type": {"PLA": 8, "PETG": 4},
-            "by_brand": {"Prusament": 6},
-            "by_color": {"black": 5},
-            "low_stock": 2,
-            "consumption_30d": 850.0,
-            "consumption_rate": 28.3
-        }
-        """.data(using: .utf8)!
-
-        let stats = try decoder.decode(MaterialStats.self, from: json)
-        XCTAssertEqual(stats.totalSpools, 12)
-        XCTAssertEqual(stats.lowStock, 2)
-        XCTAssertEqual(stats.byType?["PLA"], 8)
-    }
-
     func testSystemInfoDecoding() throws {
         let json = """
         {
@@ -472,5 +449,82 @@ final class AnalyticsModelTests: XCTestCase {
         XCTAssertEqual(overview.jobs?.totalJobs, 0)
         XCTAssertNil(overview.files)
         XCTAssertNil(overview.printers)
+    }
+}
+
+final class MaterialModelTests: XCTestCase {
+
+    func testMaterialStatsDecoding() throws {
+        let json = """
+        {
+            "total_spools": 5,
+            "total_weight": 5.0,
+            "total_remaining": 3.2,
+            "total_value": 125.5,
+            "remaining_value": 80.25,
+            "by_type": {"PLA": {"count": 3, "total_weight": 3.0, "remaining": 2.0}},
+            "by_brand": {"PRUSAMENT": {"count": 2, "total_weight": 2.0, "remaining": 1.2}},
+            "by_color": {"BLACK": 2, "RED": 3},
+            "low_stock": ["mat-1", "mat-2"],
+            "consumption_30d": 0.6
+        }
+        """.data(using: .utf8)!
+
+        let stats = try APIConfiguration.makeDecoder().decode(MaterialStats.self, from: json)
+        XCTAssertEqual(stats.totalSpools, 5)
+        XCTAssertEqual(stats.lowStock?.count, 2)
+        XCTAssertEqual(stats.byColor?["RED"], 3)
+        XCTAssertEqual(stats.consumption30d, 0.6)
+    }
+
+    func testConsumptionHistoryDecoding() throws {
+        let json = """
+        {
+            "items": [
+                {
+                    "id": "c-1",
+                    "job_id": "job-1",
+                    "material_id": "mat-1",
+                    "material_type": "PLA",
+                    "brand": "PRUSAMENT",
+                    "color": "BLACK",
+                    "weight_used": 42.5,
+                    "cost": 1.1,
+                    "timestamp": "2026-07-01T12:00:00",
+                    "printer_id": "printer-1",
+                    "file_name": "benchy.gcode",
+                    "print_time_hours": 1.5
+                }
+            ],
+            "total_count": 1,
+            "page": 1,
+            "limit": 50,
+            "total_pages": 1
+        }
+        """.data(using: .utf8)!
+
+        let history = try APIConfiguration.makeDecoder().decode(ConsumptionHistoryResponse.self, from: json)
+        XCTAssertEqual(history.items.first?.weightUsed, 42.5)
+        XCTAssertEqual(history.totalPages, 1)
+    }
+}
+
+final class FormatterTests: XCTestCase {
+
+    func testWeightKg() {
+        XCTAssertEqual(Formatters.weightKg(1.5), "1.50 kg")
+        XCTAssertEqual(Formatters.weightKg(0.75), "750 g")
+    }
+
+    func testWeightGrams() {
+        XCTAssertEqual(Formatters.weightGrams(500), "500 g")
+        XCTAssertEqual(Formatters.weightGrams(1500), "1.50 kg")
+    }
+
+    func testParseISODateVariants() {
+        XCTAssertNotNil(Formatters.parseISODate("2026-07-18T10:00:00Z"))
+        XCTAssertNotNil(Formatters.parseISODate("2026-07-18T10:00:00.123456Z"))
+        XCTAssertNotNil(Formatters.parseISODate("2026-07-18T10:00:00"))
+        XCTAssertNil(Formatters.parseISODate("not-a-date"))
     }
 }

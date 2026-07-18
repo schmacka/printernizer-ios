@@ -47,6 +47,10 @@
 		A1000001229F020D /* PrinterDiscoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F020E /* PrinterDiscoveryView.swift */; };
 		A1000001229F020F /* AnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0210 /* AnalyticsService.swift */; };
 		A1000001229F0211 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0212 /* DashboardViewModel.swift */; };
+		A1000001229F0213 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0214 /* Formatters.swift */; };
+		A1000001229F0215 /* MaterialFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0216 /* MaterialFormView.swift */; };
+		A1000001229F0217 /* RecordConsumptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0218 /* RecordConsumptionView.swift */; };
+		A1000001229F0219 /* ConsumptionHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F021A /* ConsumptionHistoryView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -102,6 +106,10 @@
 		A1000001229F020E /* PrinterDiscoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrinterDiscoveryView.swift; sourceTree = "<group>"; };
 		A1000001229F0210 /* AnalyticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsService.swift; sourceTree = "<group>"; };
 		A1000001229F0212 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
+		A1000001229F0214 /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
+		A1000001229F0216 /* MaterialFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaterialFormView.swift; sourceTree = "<group>"; };
+		A1000001229F0218 /* RecordConsumptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordConsumptionView.swift; sourceTree = "<group>"; };
+		A1000001229F021A /* ConsumptionHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumptionHistoryView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,6 +173,7 @@
 				A1000001229F0030 /* Views */,
 				A1000001229F0031 /* ViewModels */,
 				A1000001229F0032 /* Services */,
+				A1000001229F021B /* Utilities */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -326,8 +335,19 @@
 			children = (
 				A1000001229F0091 /* MaterialListView.swift */,
 				A1000001229F0093 /* MaterialDetailView.swift */,
+				A1000001229F0216 /* MaterialFormView.swift */,
+				A1000001229F0218 /* RecordConsumptionView.swift */,
+				A1000001229F021A /* ConsumptionHistoryView.swift */,
 			);
 			path = Materials;
+			sourceTree = "<group>";
+		};
+		A1000001229F021B /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F0214 /* Formatters.swift */,
+			);
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -459,6 +479,10 @@
 				A1000001229F020D /* PrinterDiscoveryView.swift in Sources */,
 				A1000001229F020F /* AnalyticsService.swift in Sources */,
 				A1000001229F0211 /* DashboardViewModel.swift in Sources */,
+				A1000001229F0213 /* Formatters.swift in Sources */,
+				A1000001229F0215 /* MaterialFormView.swift in Sources */,
+				A1000001229F0217 /* RecordConsumptionView.swift in Sources */,
+				A1000001229F0219 /* ConsumptionHistoryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

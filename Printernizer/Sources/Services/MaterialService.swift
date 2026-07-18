@@ -25,17 +25,17 @@ struct MaterialResponse: Codable, Identifiable {
     let updatedAt: String
 }
 
+/// Inventory statistics from GET /materials/stats. Weights are in kg;
+/// `lowStock` is the list of material IDs below 20% remaining.
 struct MaterialStats: Codable {
     let totalSpools: Int
     let totalWeight: Double
     let totalRemaining: Double?
     let totalValue: Double?
     let remainingValue: Double?
-    let byType: [String: Double]?
-    let byBrand: [String: Double]?
-    let byColor: [String: Double]?
-    let lowStock: Int?
-    let consumptionRate: Double?
+    let byColor: [String: Int]?
+    let lowStock: [String]?
+    let consumption30d: Double?
 }
 
 struct MaterialTypes: Codable {
@@ -44,25 +44,66 @@ struct MaterialTypes: Codable {
     let colors: [String]
 }
 
+/// Create request for POST /materials. Weights are kilograms;
+/// type/brand/color must be backend enum values (see /materials/types).
 struct MaterialCreateRequest: Codable {
     let materialType: String
     let brand: String
     let color: String
     let diameter: Double
     let weight: Double
+    let remainingWeight: Double
     let costPerKg: Double
     let vendor: String
     let batchNumber: String?
     let notes: String?
     let colorHex: String?
     let location: String?
+    let isActive: Bool
 }
 
+/// Update request for PATCH /materials/{id}. The backend only allows
+/// these fields to change; type/brand/color/weight are immutable.
 struct MaterialUpdateRequest: Codable {
-    let remainingWeight: Double?
-    let notes: String?
-    let location: String?
-    let isActive: Bool?
+    var remainingWeight: Double?
+    var costPerKg: Double?
+    var notes: String?
+    var colorHex: String?
+    var location: String?
+    var isActive: Bool?
+}
+
+/// Request body for POST /materials/consumption. Weight is grams.
+struct ConsumptionRequest: Codable {
+    let jobId: String
+    let materialId: String
+    let weightGrams: Double
+    let printerId: String
+    let fileName: String?
+    let printTimeHours: Double?
+}
+
+struct ConsumptionHistoryItem: Codable, Identifiable {
+    let id: String
+    let jobId: String
+    let materialId: String
+    let materialType: String
+    let brand: String
+    let color: String
+    let weightUsed: Double
+    let cost: Double
+    let timestamp: String
+    let printerId: String
+    let fileName: String?
+    let printTimeHours: Double?
+}
+
+struct ConsumptionHistoryResponse: Codable {
+    let items: [ConsumptionHistoryItem]
+    let totalCount: Int
+    let page: Int
+    let limit: Int
+    let totalPages: Int
 }
 
 // MARK: - Material Service
@@ -216,6 +257,53 @@ final class MaterialService: ObservableObject {
         return fileURL
     }
 
+    func recordConsumption(_ consumption: ConsumptionRequest) async throws {
+        guard let url = APIConfiguration.url("materials/consumption") else {
+            throw MaterialError.invalidURL
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try encoder.encode(consumption)
+
+        let (_, response) = try await session.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw MaterialError.serverError
+        }
+    }
+
+    func consumptionHistory(
+        materialId: String? = nil,
+        days: Int = 30,
+        page: Int = 1,
+        limit: Int = 50
+    ) async throws -> ConsumptionHistoryResponse {
+        var queryItems = [
+            URLQueryItem(name: "days", value: String(days)),
+            URLQueryItem(name: "page", value: String(page)),
+            URLQueryItem(name: "limit", value: String(limit))
+        ]
+        if let materialId {
+            queryItems.append(URLQueryItem(name: "material_id", value: materialId))
+        }
+
+        guard let url = APIConfiguration.url("materials/consumption/history", queryItems: queryItems) else {
+            throw MaterialError.invalidURL
+        }
+
+        let (data, response) = try await session.data(from: url)
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw MaterialError.serverError
+        }
+
+        return try decoder.decode(ConsumptionHistoryResponse.self, from: data)
+    }
+
     func deleteMaterial(id: String) async throws {
         guard let url = APIConfiguration.url("materials/\(id)") else {
             throw MaterialError.invalidURL
@@ -298,18 +386,13 @@ extension MaterialResponse {
         }
     }
 
+    // Backend weights are kilograms.
     var formattedWeight: String {
-        if remainingWeight >= 1000 {
-            return String(format: "%.1f kg", remainingWeight / 1000)
-        }
-        return String(format: "%.0f g", remainingWeight)
+        Formatters.weightKg(remainingWeight)
     }
 
     var formattedTotalWeight: String {
-        if weight >= 1000 {
-            return String(format: "%.1f kg", weight / 1000)
-        }
-        return String(format: "%.0f g", weight)
+        Formatters.weightKg(weight)
     }
 
     var isLowStock: Bool {
