@@ -192,6 +192,14 @@ struct SettingsView: View {
                 }
             }
 
+            Section("Developer") {
+                NavigationLink {
+                    LogViewerView()
+                } label: {
+                    Label("Server Logs", systemImage: "doc.plaintext")
+                }
+            }
+
             Section("About") {
                 LabeledContent("Version", value: appVersion)
                 LabeledContent("Build", value: buildNumber)

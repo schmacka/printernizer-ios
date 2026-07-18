@@ -82,6 +82,8 @@
 		A1000001229F0259 /* ServerSettingsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F025A /* ServerSettingsService.swift */; };
 		A1000001229F025B /* ServerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F025C /* ServerSettingsView.swift */; };
 		A1000001229F025D /* ToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F025E /* ToolsView.swift */; };
+		A1000001229F025F /* LogService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0260 /* LogService.swift */; };
+		A1000001229F0261 /* LogViewerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0262 /* LogViewerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -172,6 +174,8 @@
 		A1000001229F025A /* ServerSettingsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerSettingsService.swift; sourceTree = "<group>"; };
 		A1000001229F025C /* ServerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerSettingsView.swift; sourceTree = "<group>"; };
 		A1000001229F025E /* ToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolsView.swift; sourceTree = "<group>"; };
+		A1000001229F0260 /* LogService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogService.swift; sourceTree = "<group>"; };
+		A1000001229F0262 /* LogViewerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogViewerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -338,6 +342,7 @@
 				A1000001229F0251 /* NotificationChannelService.swift */,
 				A1000001229F0255 /* FileService.swift */,
 				A1000001229F025A /* ServerSettingsService.swift */,
+				A1000001229F0260 /* LogService.swift */,
 				A1000001229F0057 /* MaterialService.swift */,
 				A1000001229F00B5 /* NotificationService.swift */,
 			);
@@ -370,6 +375,7 @@
 				A1000001229F00A1 /* QRScannerView.swift */,
 				A1000001229F0253 /* NotificationChannelsView.swift */,
 				A1000001229F025C /* ServerSettingsView.swift */,
+				A1000001229F0262 /* LogViewerView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -647,6 +653,8 @@
 				A1000001229F0259 /* ServerSettingsService.swift in Sources */,
 				A1000001229F025B /* ServerSettingsView.swift in Sources */,
 				A1000001229F025D /* ToolsView.swift in Sources */,
+				A1000001229F025F /* LogService.swift in Sources */,
+				A1000001229F0261 /* LogViewerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
