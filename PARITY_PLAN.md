@@ -24,9 +24,9 @@ Note: monitoring start/stop deferred — backend auto-monitors connected printer
 
 ## Phase 1.2 — Dashboard
 Endpoints: `GET /analytics/overview`, `GET /printers`, `GET /jobs?limit=5`, `GET /files/statistics`
-- [ ] `Services/AnalyticsService.swift` (all-optional DTOs)
-- [ ] `ViewModels/DashboardViewModel.swift` — compose analytics + printers + recent jobs; consume WS `printer_status` (pattern in `PrinterListViewModel`) and the currently-unconsumed `job_update`/`system_event` messages
-- [ ] `Views/Dashboard/DashboardView.swift` — stat tiles (printers online, active jobs, files, jobs today), live printer grid (reuse `PrinterCardView`), recent jobs list
+- [x] `Services/AnalyticsService.swift` (overview/summary/business, all-optional DTOs, period picker support)
+- [x] `ViewModels/DashboardViewModel.swift` — composes analytics + printers + recent jobs; consumes WS `printer_status` and `job_update` (refreshes recent jobs)
+- [x] `Views/Dashboard/DashboardView.swift` — stat tiles (printers online, jobs, completed, files), live printer cards (reuses `PrinterCardView` + `StatCard`), recent jobs (reuses `JobRowView`), period menu, WS + polling fallback
 
 ## Phase 1.3 — Materials CRUD + consumption
 `MaterialService.createMaterial/updateMaterial/getTypes` already exist — UI only. Add service methods: `POST /materials/consumption`, `GET /materials/consumption/history`, `GET /materials/report`

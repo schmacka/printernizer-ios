@@ -444,3 +444,33 @@ final class PrinterServiceModelTests: XCTestCase {
         XCTAssertEqual(PrinterType.octoprint.displayName, "OctoPrint")
     }
 }
+
+final class AnalyticsModelTests: XCTestCase {
+
+    func testOverviewDecoding() throws {
+        let json = """
+        {
+            "jobs": {"total_jobs": 12, "completed_jobs": 10, "failed_jobs": 1, "success_rate": 83.3},
+            "files": {"total_files": 42, "downloaded_files": 30, "local_files": 5},
+            "printers": {"total_printers": 3, "online_printers": 2}
+        }
+        """.data(using: .utf8)!
+
+        let overview = try APIConfiguration.makeDecoder().decode(AnalyticsOverview.self, from: json)
+        XCTAssertEqual(overview.jobs?.totalJobs, 12)
+        XCTAssertEqual(overview.jobs?.successRate, 83.3)
+        XCTAssertEqual(overview.files?.totalFiles, 42)
+        XCTAssertEqual(overview.printers?.onlinePrinters, 2)
+    }
+
+    func testOverviewDecodingWithMissingSections() throws {
+        let json = """
+        {"jobs": {"total_jobs": 0}}
+        """.data(using: .utf8)!
+
+        let overview = try APIConfiguration.makeDecoder().decode(AnalyticsOverview.self, from: json)
+        XCTAssertEqual(overview.jobs?.totalJobs, 0)
+        XCTAssertNil(overview.files)
+        XCTAssertNil(overview.printers)
+    }
+}
