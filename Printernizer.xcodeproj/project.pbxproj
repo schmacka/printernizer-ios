@@ -71,6 +71,8 @@
 		A1000001229F0241 /* SlicingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0242 /* SlicingService.swift */; };
 		A1000001229F0243 /* TagEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0244 /* TagEditorView.swift */; };
 		A1000001229F0245 /* SliceSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0246 /* SliceSheetView.swift */; };
+		A1000001229F0247 /* TimelapseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0248 /* TimelapseService.swift */; };
+		A1000001229F0249 /* TimelapseListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F024A /* TimelapseListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -150,6 +152,8 @@
 		A1000001229F0242 /* SlicingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlicingService.swift; sourceTree = "<group>"; };
 		A1000001229F0244 /* TagEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagEditorView.swift; sourceTree = "<group>"; };
 		A1000001229F0246 /* SliceSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliceSheetView.swift; sourceTree = "<group>"; };
+		A1000001229F0248 /* TimelapseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelapseService.swift; sourceTree = "<group>"; };
+		A1000001229F024A /* TimelapseListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelapseListView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -259,6 +263,7 @@
 				A1000001229F022C /* Orders */,
 				A1000001229F0233 /* Generator */,
 				A1000001229F023C /* Ideas */,
+				A1000001229F024B /* Timelapses */,
 				A1000001229F0206 /* More */,
 			);
 			path = Views;
@@ -307,6 +312,7 @@
 				A1000001229F00B3 /* LibraryService.swift */,
 				A1000001229F0240 /* TagService.swift */,
 				A1000001229F0242 /* SlicingService.swift */,
+				A1000001229F0248 /* TimelapseService.swift */,
 				A1000001229F0057 /* MaterialService.swift */,
 				A1000001229F00B5 /* NotificationService.swift */,
 			);
@@ -391,6 +397,14 @@
 				A1000001229F021A /* ConsumptionHistoryView.swift */,
 			);
 			path = Materials;
+			sourceTree = "<group>";
+		};
+		A1000001229F024B /* Timelapses */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F024A /* TimelapseListView.swift */,
+			);
+			path = Timelapses;
 			sourceTree = "<group>";
 		};
 		A1000001229F023C /* Ideas */ = {
@@ -587,6 +601,8 @@
 				A1000001229F0241 /* SlicingService.swift in Sources */,
 				A1000001229F0243 /* TagEditorView.swift in Sources */,
 				A1000001229F0245 /* SliceSheetView.swift in Sources */,
+				A1000001229F0247 /* TimelapseService.swift in Sources */,
+				A1000001229F0249 /* TimelapseListView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

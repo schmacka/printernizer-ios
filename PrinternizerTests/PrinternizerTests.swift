@@ -704,3 +704,57 @@ final class LibraryPowerFeatureTests: XCTestCase {
         XCTAssertEqual(job.estimatedPrintTime, 5400)
     }
 }
+
+final class TimelapseModelTests: XCTestCase {
+
+    func testTimelapseListDecoding() throws {
+        let json = """
+        [
+            {
+                "id": "tl-1",
+                "source_folder": "/timelapses/benchy",
+                "output_video_path": "/timelapses/benchy.mp4",
+                "status": "completed",
+                "job_id": "job-1",
+                "folder_name": "benchy_2026-07-18",
+                "image_count": 480,
+                "video_duration": 16.0,
+                "file_size_bytes": 24500000,
+                "error_message": null,
+                "pinned": true,
+                "video_exists": true,
+                "age_days": 2,
+                "created_at": "2026-07-16T08:00:00",
+                "updated_at": "2026-07-16T09:00:00"
+            }
+        ]
+        """.data(using: .utf8)!
+
+        let timelapses = try APIConfiguration.makeDecoder().decode([TimelapseResponse].self, from: json)
+        XCTAssertEqual(timelapses.count, 1)
+        XCTAssertEqual(timelapses[0].displayName, "benchy_2026-07-18")
+        XCTAssertEqual(timelapses[0].pinned, true)
+        XCTAssertEqual(timelapses[0].formattedSize, "24.5 MB")
+    }
+
+    func testTimelapseStatsDecoding() throws {
+        let json = """
+        {
+            "total_videos": 12,
+            "total_size_bytes": 1500000000,
+            "discovered_count": 1,
+            "pending_count": 0,
+            "processing_count": 2,
+            "completed_count": 9,
+            "failed_count": 0,
+            "cleanup_candidates_count": 3,
+            "total_size_mb": 1430.51,
+            "total_size_gb": 1.4
+        }
+        """.data(using: .utf8)!
+
+        let stats = try APIConfiguration.makeDecoder().decode(TimelapseStats.self, from: json)
+        XCTAssertEqual(stats.totalVideos, 12)
+        XCTAssertEqual(stats.totalSizeGb, 1.4)
+    }
+}

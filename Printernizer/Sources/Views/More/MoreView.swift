@@ -5,6 +5,7 @@ import SwiftUI
 enum MoreDestination: Hashable {
     case materials
     case ideas
+    case timelapses
     case generator
     case settings
 }
@@ -20,6 +21,10 @@ struct MoreView: View {
 
                     NavigationLink(value: MoreDestination.ideas) {
                         Label("Ideas", systemImage: "lightbulb")
+                    }
+
+                    NavigationLink(value: MoreDestination.timelapses) {
+                        Label("Timelapses", systemImage: "video")
                     }
 
                     NavigationLink(value: MoreDestination.generator) {
@@ -40,6 +45,8 @@ struct MoreView: View {
                     MaterialListView()
                 case .ideas:
                     IdeaListView()
+                case .timelapses:
+                    TimelapseListView()
                 case .generator:
                     GeneratorView()
                 case .settings:

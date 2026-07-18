@@ -71,9 +71,9 @@ Endpoints: `POST /files/upload` (multipart), `POST /library/files/{checksum}/rep
 
 ## Phase 2.3 — Timelapses
 Endpoints: `GET /timelapses`, `/timelapses/stats`, `GET /timelapses/{id}/video`, `POST /{id}/process`, `DELETE /{id}`, `PATCH /{id}/{link,pin}`, `POST /timelapses/bulk-delete`
-- [ ] `Services/TimelapseService.swift`
-- [ ] `Views/Timelapses/TimelapseListView.swift` (grid, multi-select bulk delete, pin/link actions), `TimelapsePlayerView.swift` (`VideoPlayer` + `AVPlayer` on the absolute video URL via `APIConfiguration.url`; verify ATS/local-networking in Info.plist)
-- [ ] Add Timelapses row to More
+- [x] `Services/TimelapseService.swift` (list/stats/process/pin/link/delete/bulk-delete, video URL)
+- [x] `Views/Timelapses/TimelapseListView.swift` (stats header, status + linked-only filters, swipe pin/delete, process button) + `TimelapsePlayerView` (`VideoPlayer` on `/timelapses/{id}/video`, ShareLink). ATS note as in Phase 1.5 — verify http video playback on hardware
+- [x] Add Timelapses row to More
 
 ## Phase 3 — Long tail (in order; each independently shippable)
 - [ ] 3.1 Files & downloads: `Services/FileService.swift`, `Views/Files/` — `GET /files`, download w/ `/downloads/{id}/progress` polling, watch-folder list/add/remove, G-code analysis view
