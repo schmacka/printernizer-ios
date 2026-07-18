@@ -76,7 +76,7 @@ Endpoints: `GET /timelapses`, `/timelapses/stats`, `GET /timelapses/{id}/video`,
 - [x] Add Timelapses row to More
 
 ## Phase 3 — Long tail (in order; each independently shippable)
-- [ ] 3.1 Files & downloads: `Services/FileService.swift`, `Views/Files/` — `GET /files`, download w/ `/downloads/{id}/progress` polling, watch-folder list/add/remove, G-code analysis view
+- [x] 3.1 Files & downloads: `Services/FileService.swift` + `Views/Files/FileListView.swift` — printer file list (status filter, search, sync, download-to-server, delete) and watch folder management (add/remove/toggle/rescan). Download endpoint blocks until complete, so no progress polling needed; G-code analysis view deferred (enhanced metadata already shown in Library)
 - [ ] 3.2 Settings management: `Services/SettingsService.swift` — `GET/PUT /settings/application` form, gcode-optimization, ffmpeg-check row
 - [x] 3.3 Notification channels: `NotificationChannelService` + `NotificationChannelsView` in Settings — Discord/Slack/ntfy CRUD, per-event subscriptions, swipe-to-test/delete (local `NotificationService` untouched)
 - [x] 3.4 Search: `Services/SearchService.swift` + `Views/More/SearchView.swift` — unified search over library files and ideas, grouped results (suggestions/history endpoints wrapped in service, UI on submit)

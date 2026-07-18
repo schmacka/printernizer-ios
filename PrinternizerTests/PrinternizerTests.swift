@@ -758,3 +758,60 @@ final class TimelapseModelTests: XCTestCase {
         XCTAssertEqual(stats.totalSizeGb, 1.4)
     }
 }
+
+final class FileServiceModelTests: XCTestCase {
+
+    func testPrinterFileListDecoding() throws {
+        let json = """
+        {
+            "files": [{
+                "id": "printer-1_benchy.3mf",
+                "printer_id": "printer-1",
+                "filename": "benchy.3mf",
+                "source": "printer",
+                "status": "available",
+                "file_size": 2500000,
+                "file_type": "3mf",
+                "downloaded_at": null,
+                "created_at": "2026-07-18T10:00:00",
+                "has_thumbnail": true
+            }],
+            "total_count": 1,
+            "pagination": {"page": 1, "limit": 50, "total_items": 1, "total_pages": 1}
+        }
+        """.data(using: .utf8)!
+
+        let response = try APIConfiguration.makeDecoder().decode(PrinterFileListResponse.self, from: json)
+        XCTAssertEqual(response.files.count, 1)
+        XCTAssertTrue(response.files[0].isDownloadable)
+        XCTAssertEqual(response.files[0].formattedSize, "2.5 MB")
+    }
+
+    func testWatchFolderSettingsDecoding() throws {
+        let json = """
+        {
+            "watch_folders": [{
+                "id": "wf-1",
+                "folder_path": "/models/incoming",
+                "is_active": true,
+                "recursive": true,
+                "folder_name": "incoming",
+                "description": null,
+                "file_count": 12,
+                "is_valid": true,
+                "validation_error": null,
+                "source": "database",
+                "auto_tag": false
+            }],
+            "enabled": true,
+            "recursive": true,
+            "supported_extensions": [".stl", ".3mf"]
+        }
+        """.data(using: .utf8)!
+
+        let settings = try APIConfiguration.makeDecoder().decode(WatchFolderSettings.self, from: json)
+        XCTAssertEqual(settings.watchFolders.count, 1)
+        XCTAssertEqual(settings.watchFolders[0].fileCount, 12)
+        XCTAssertEqual(settings.enabled, true)
+    }
+}

@@ -77,6 +77,8 @@
 		A1000001229F024E /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F024F /* SearchView.swift */; };
 		A1000001229F0250 /* NotificationChannelService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0251 /* NotificationChannelService.swift */; };
 		A1000001229F0252 /* NotificationChannelsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0253 /* NotificationChannelsView.swift */; };
+		A1000001229F0254 /* FileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0255 /* FileService.swift */; };
+		A1000001229F0256 /* FileListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0257 /* FileListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -162,6 +164,8 @@
 		A1000001229F024F /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		A1000001229F0251 /* NotificationChannelService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationChannelService.swift; sourceTree = "<group>"; };
 		A1000001229F0253 /* NotificationChannelsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationChannelsView.swift; sourceTree = "<group>"; };
+		A1000001229F0255 /* FileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileService.swift; sourceTree = "<group>"; };
+		A1000001229F0257 /* FileListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileListView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -272,6 +276,7 @@
 				A1000001229F0233 /* Generator */,
 				A1000001229F023C /* Ideas */,
 				A1000001229F024B /* Timelapses */,
+				A1000001229F0258 /* Files */,
 				A1000001229F0206 /* More */,
 			);
 			path = Views;
@@ -324,6 +329,7 @@
 				A1000001229F0248 /* TimelapseService.swift */,
 				A1000001229F024D /* SearchService.swift */,
 				A1000001229F0251 /* NotificationChannelService.swift */,
+				A1000001229F0255 /* FileService.swift */,
 				A1000001229F0057 /* MaterialService.swift */,
 				A1000001229F00B5 /* NotificationService.swift */,
 			);
@@ -409,6 +415,14 @@
 				A1000001229F021A /* ConsumptionHistoryView.swift */,
 			);
 			path = Materials;
+			sourceTree = "<group>";
+		};
+		A1000001229F0258 /* Files */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F0257 /* FileListView.swift */,
+			);
+			path = Files;
 			sourceTree = "<group>";
 		};
 		A1000001229F024B /* Timelapses */ = {
@@ -619,6 +633,8 @@
 				A1000001229F024E /* SearchView.swift in Sources */,
 				A1000001229F0250 /* NotificationChannelService.swift in Sources */,
 				A1000001229F0252 /* NotificationChannelsView.swift in Sources */,
+				A1000001229F0254 /* FileService.swift in Sources */,
+				A1000001229F0256 /* FileListView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

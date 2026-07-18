@@ -7,6 +7,7 @@ enum MoreDestination: Hashable {
     case materials
     case ideas
     case timelapses
+    case files
     case generator
     case settings
 }
@@ -32,6 +33,10 @@ struct MoreView: View {
                         Label("Timelapses", systemImage: "video")
                     }
 
+                    NavigationLink(value: MoreDestination.files) {
+                        Label("Files", systemImage: "folder")
+                    }
+
                     NavigationLink(value: MoreDestination.generator) {
                         Label("Generator", systemImage: "cube.transparent")
                     }
@@ -54,6 +59,8 @@ struct MoreView: View {
                     IdeaListView()
                 case .timelapses:
                     TimelapseListView()
+                case .files:
+                    FileListView()
                 case .generator:
                     GeneratorView()
                 case .settings:
