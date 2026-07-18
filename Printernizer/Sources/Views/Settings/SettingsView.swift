@@ -123,6 +123,12 @@ struct SettingsView: View {
                     Toggle("Print Failed", isOn: $notifyPrintFailed)
                     Toggle("Printer Offline", isOn: $notifyPrinterOffline)
                 }
+
+                NavigationLink {
+                    NotificationChannelsView()
+                } label: {
+                    Label("Server Channels", systemImage: "bell.badge")
+                }
             }
 
             Section("About") {
