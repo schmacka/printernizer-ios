@@ -4,6 +4,7 @@ import SwiftUI
 /// here instead of a new root tab, keeping the tab bar at five items.
 enum MoreDestination: Hashable {
     case materials
+    case ideas
     case generator
     case settings
 }
@@ -15,6 +16,10 @@ struct MoreView: View {
                 Section {
                     NavigationLink(value: MoreDestination.materials) {
                         Label("Materials", systemImage: "cylinder")
+                    }
+
+                    NavigationLink(value: MoreDestination.ideas) {
+                        Label("Ideas", systemImage: "lightbulb")
                     }
 
                     NavigationLink(value: MoreDestination.generator) {
@@ -33,6 +38,8 @@ struct MoreView: View {
                 switch destination {
                 case .materials:
                     MaterialListView()
+                case .ideas:
+                    IdeaListView()
                 case .generator:
                     GeneratorView()
                 case .settings:

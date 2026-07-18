@@ -592,3 +592,54 @@ final class OrderModelTests: XCTestCase {
         XCTAssertNil(object["filename"])
     }
 }
+
+final class IdeaModelTests: XCTestCase {
+
+    func testIdeaListDecoding() throws {
+        let json = """
+        {
+            "ideas": [{
+                "id": "idea-1",
+                "title": "Articulated Dragon",
+                "description": null,
+                "source_type": "makerworld",
+                "source_url": "https://makerworld.com/models/12345",
+                "thumbnail_path": null,
+                "category": "Toys",
+                "priority": 4,
+                "status": "planned",
+                "is_business": false,
+                "estimated_print_time": 240,
+                "material_notes": null,
+                "customer_info": null,
+                "planned_date": null,
+                "completed_date": null,
+                "metadata": {"model_id": "12345"},
+                "tags": ["dragon"],
+                "created_at": "2026-07-18T10:00:00",
+                "updated_at": "2026-07-18T10:00:00"
+            }],
+            "page": 1,
+            "page_size": 20,
+            "has_more": false
+        }
+        """.data(using: .utf8)!
+
+        let response = try APIConfiguration.makeDecoder().decode(IdeaListResponse.self, from: json)
+        XCTAssertEqual(response.ideas.count, 1)
+        XCTAssertEqual(response.ideas[0].ideaStatus, .planned)
+        XCTAssertEqual(response.ideas[0].tags, ["dragon"])
+        XCTAssertEqual(response.hasMore, false)
+    }
+
+    func testIdeaStatusFallback() {
+        let idea = IdeaResponse(
+            id: "x", title: "t", description: nil, sourceType: nil, sourceUrl: nil,
+            thumbnailPath: nil, category: nil, priority: nil, status: "bogus",
+            isBusiness: nil, estimatedPrintTime: nil, materialNotes: nil,
+            customerInfo: nil, plannedDate: nil, completedDate: nil, tags: nil,
+            createdAt: nil, updatedAt: nil
+        )
+        XCTAssertEqual(idea.ideaStatus, .idea)
+    }
+}

@@ -62,6 +62,10 @@
 		A1000001229F022D /* GeneratorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F022E /* GeneratorService.swift */; };
 		A1000001229F022F /* GeneratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0230 /* GeneratorView.swift */; };
 		A1000001229F0231 /* GeneratorPresetsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0232 /* GeneratorPresetsView.swift */; };
+		A1000001229F0234 /* IdeaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0235 /* IdeaService.swift */; };
+		A1000001229F0236 /* IdeaListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0237 /* IdeaListView.swift */; };
+		A1000001229F0238 /* IdeaDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0239 /* IdeaDetailView.swift */; };
+		A1000001229F023A /* IdeaFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F023B /* IdeaFormView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -132,6 +136,10 @@
 		A1000001229F022E /* GeneratorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratorService.swift; sourceTree = "<group>"; };
 		A1000001229F0230 /* GeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratorView.swift; sourceTree = "<group>"; };
 		A1000001229F0232 /* GeneratorPresetsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratorPresetsView.swift; sourceTree = "<group>"; };
+		A1000001229F0235 /* IdeaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdeaService.swift; sourceTree = "<group>"; };
+		A1000001229F0237 /* IdeaListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdeaListView.swift; sourceTree = "<group>"; };
+		A1000001229F0239 /* IdeaDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdeaDetailView.swift; sourceTree = "<group>"; };
+		A1000001229F023B /* IdeaFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdeaFormView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -240,6 +248,7 @@
 				A1000001229F003A /* Materials */,
 				A1000001229F022C /* Orders */,
 				A1000001229F0233 /* Generator */,
+				A1000001229F023C /* Ideas */,
 				A1000001229F0206 /* More */,
 			);
 			path = Views;
@@ -284,6 +293,7 @@
 				A1000001229F0053 /* JobService.swift */,
 				A1000001229F021D /* OrderService.swift */,
 				A1000001229F022E /* GeneratorService.swift */,
+				A1000001229F0235 /* IdeaService.swift */,
 				A1000001229F00B3 /* LibraryService.swift */,
 				A1000001229F0057 /* MaterialService.swift */,
 				A1000001229F00B5 /* NotificationService.swift */,
@@ -367,6 +377,16 @@
 				A1000001229F021A /* ConsumptionHistoryView.swift */,
 			);
 			path = Materials;
+			sourceTree = "<group>";
+		};
+		A1000001229F023C /* Ideas */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F0237 /* IdeaListView.swift */,
+				A1000001229F0239 /* IdeaDetailView.swift */,
+				A1000001229F023B /* IdeaFormView.swift */,
+			);
+			path = Ideas;
 			sourceTree = "<group>";
 		};
 		A1000001229F0233 /* Generator */ = {
@@ -543,6 +563,10 @@
 				A1000001229F022D /* GeneratorService.swift in Sources */,
 				A1000001229F022F /* GeneratorView.swift in Sources */,
 				A1000001229F0231 /* GeneratorPresetsView.swift in Sources */,
+				A1000001229F0234 /* IdeaService.swift in Sources */,
+				A1000001229F0236 /* IdeaListView.swift in Sources */,
+				A1000001229F0238 /* IdeaDetailView.swift in Sources */,
+				A1000001229F023A /* IdeaFormView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

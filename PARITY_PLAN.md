@@ -57,9 +57,9 @@ Note: if the web page fails to load over plain http on device, add an ATS except
 
 ## Phase 2.1 — Ideas board
 Endpoints: `/ideas` CRUD, `PATCH /ideas/{id}/status`, `POST /ideas/import`, `GET /ideas/tags/all`, `/ideas/stats/overview`, `GET /ideas/url/validate`, `POST /ideas/url/preview`, `GET /ideas/url/platforms`
-- [ ] `Services/IdeaService.swift`
-- [ ] `Views/Ideas/IdeaListView.swift` (segmented status filter idea/planned/printing/completed/archived; business/personal filter), `IdeaDetailView.swift`, `IdeaFormView.swift` (paste URL → `/ideas/url/preview` auto-fill)
-- [ ] Add Ideas row to More
+- [x] `Services/IdeaService.swift` (list/create/update/status/delete, URL import + preview)
+- [x] `Views/Ideas/IdeaListView.swift` (status + business filters, pagination), `IdeaDetailView.swift` (status chips, source link, delete), `IdeaFormView.swift` (paste URL → `/ideas/url/preview` auto-fill, import via `/ideas/import`)
+- [x] Add Ideas row to More
 
 ## Phase 2.2 — Library power features (upload, tags, slicing)
 Endpoints: `POST /files/upload` (multipart), `POST /library/files/{checksum}/reprocess`, `GET /library/statistics`; `/tags` CRUD + assign/remove; `GET /slicing`, `GET /slicing/{id}/profiles`, `POST /slicing/library/{checksum}/slice`, `POST /slicing/slice-and-print`, `GET /slicing/jobs/{id}`
