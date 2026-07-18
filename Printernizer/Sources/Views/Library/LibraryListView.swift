@@ -6,7 +6,10 @@ struct LibraryListView: View {
     @State private var searchText = ""
     @State private var selectedFile: LibraryFile?
     @State private var roleFilter: LibraryRoleFilter = .all
+    @State private var sourceFilter: String?
+    @State private var thumbnailOnly = false
     @State private var showFileImporter = false
+    @State private var showStats = false
 
     /// File types the backend accepts for library uploads.
     private static let uploadTypes: [UTType] = {
@@ -74,10 +77,38 @@ struct LibraryListView: View {
                                 }
                             }
                         }
+
+                        Divider()
+
+                        Picker("Source", selection: $sourceFilter) {
+                            Text("All Sources").tag(String?.none)
+                            Text("Printer").tag(String?.some("printer"))
+                            Text("Watch Folder").tag(String?.some("watch_folder"))
+                            Text("Upload").tag(String?.some("upload"))
+                        }
+
+                        Toggle("With Thumbnail Only", isOn: $thumbnailOnly)
+
+                        Divider()
+
+                        Button {
+                            showStats = true
+                        } label: {
+                            Label("Library Statistics", systemImage: "chart.bar")
+                        }
                     } label: {
                         Label("Filter", systemImage: "line.3.horizontal.decrease.circle")
                     }
                 }
+            }
+            .onChange(of: sourceFilter) { _, _ in
+                Task { await viewModel.applyFilters(sourceType: sourceFilter, hasThumbnail: thumbnailOnly ? true : nil) }
+            }
+            .onChange(of: thumbnailOnly) { _, _ in
+                Task { await viewModel.applyFilters(sourceType: sourceFilter, hasThumbnail: thumbnailOnly ? true : nil) }
+            }
+            .sheet(isPresented: $showStats) {
+                LibraryStatsView()
             }
             .fileImporter(
                 isPresented: $showFileImporter,
@@ -258,6 +289,8 @@ final class LibraryListViewModel: ObservableObject {
     private var currentPage = 1
     private var totalPages = 1
     private var currentSearch: String?
+    private var sourceType: String?
+    private var hasThumbnail: Bool?
 
     var hasMorePages: Bool {
         currentPage < totalPages
@@ -275,12 +308,23 @@ final class LibraryListViewModel: ObservableObject {
         await reload()
     }
 
+    func applyFilters(sourceType: String?, hasThumbnail: Bool?) async {
+        self.sourceType = sourceType
+        self.hasThumbnail = hasThumbnail
+        await reload()
+    }
+
     private func reload() async {
         isLoading = true
         currentPage = 1
 
         do {
-            let response = try await libraryService.listFiles(search: currentSearch, page: 1)
+            let response = try await libraryService.listFiles(
+                search: currentSearch,
+                sourceType: sourceType,
+                hasThumbnail: hasThumbnail,
+                page: 1
+            )
             files = response.files
             totalPages = response.pagination?.totalPages ?? 1
         } catch {
@@ -298,7 +342,12 @@ final class LibraryListViewModel: ObservableObject {
         currentPage += 1
 
         do {
-            let response = try await libraryService.listFiles(search: currentSearch, page: currentPage)
+            let response = try await libraryService.listFiles(
+                search: currentSearch,
+                sourceType: sourceType,
+                hasThumbnail: hasThumbnail,
+                page: currentPage
+            )
             files.append(contentsOf: response.files)
             totalPages = response.pagination?.totalPages ?? totalPages
         } catch {

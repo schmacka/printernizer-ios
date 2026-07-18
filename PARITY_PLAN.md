@@ -67,7 +67,7 @@ Endpoints: `POST /files/upload` (multipart), `POST /library/files/{checksum}/rep
 - [x] `Services/TagService.swift`; tags row in file detail opens `TagEditorView` (create/assign/remove with toggle list)
 - [x] `Services/SlicingService.swift`; Slice action on models → `SliceSheetView` (slicer + profile pickers, optional printer for slice & print, 2s job polling with progress)
 - [x] Reprocess-metadata action in file detail; `LibraryService.statistics` available
-- [ ] (deferred to 3.x) surface fileType/sourceType/hasThumbnail server-side filters and a stats screen — client-side role filter already covers the common case
+- [x] Server-side source/thumbnail filters in the Library filter menu + `LibraryStatsView` sheet (totals, thumbnails, analyzed, storage, material cost)
 
 ## Phase 2.3 — Timelapses
 Endpoints: `GET /timelapses`, `/timelapses/stats`, `GET /timelapses/{id}/video`, `POST /{id}/process`, `DELETE /{id}`, `PATCH /{id}/{link,pin}`, `POST /timelapses/bulk-delete`
