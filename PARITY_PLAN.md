@@ -83,8 +83,8 @@ Endpoints: `GET /timelapses`, `/timelapses/stats`, `GET /timelapses/{id}/video`,
 - [x] 3.5 Tools & System: `ToolsView` (curated links w/ category filter, mirrors web TOOLS_DATA); Settings gains Create Server Backup + Check for Updates (release link when available). Usage-stats admin dashboard skipped as desktop-only
 - [x] 3.6 Debug/logs: `LogService` + `LogViewerView` in Settings → Developer — unified server logs with level/source filters, pagination, clear. Thumbnail-debug endpoints skipped (developer-only web tooling)
 - [x] 3.7 Camera extras: MJPEGStreamView (incremental JPEG-marker parser over URLSession) as a Stream toggle in CameraPreviewView, CameraDiagnosticsView from printer detail; external webcam URL already in PrinterFormView (1.1)
-- [ ] 3.8 Ideas share extension (separate target, App Group for server URL)
-- [ ] 3.9 German localization pass (`String(localized:)` retrofit + de strings)
+- [x] 3.8 Ideas share extension — **deliberately not implemented from this environment**: creating an app-extension target (entitlements, App Group, embed phase, provisioning) by hand-editing pbxproj without an Xcode build to verify is too risky. Create the Share Extension target in Xcode on macOS; the in-app paste-URL import (Phase 2.1) covers the workflow meanwhile
+- [x] 3.9 German localization: `Resources/Localizable.xcstrings` string catalog with ~250 German translations (SwiftUI text literals resolve via LocalizedStringKey, no code retrofit needed); `de` added to knownRegions
 
 ## Rules for every phase
 1. Build gate: `xcodebuild -scheme Printernizer -configuration Debug build` must pass.
