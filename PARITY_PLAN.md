@@ -48,10 +48,12 @@ Endpoints: `POST /jobs`, `PUT/DELETE /jobs/{id}`, `GET /jobs/export`; `/orders` 
 
 ## Phase 1.5 — Generator (WKWebView)
 Native JSCAD/three.js port is infeasible; embed the web page.
-- [ ] `Views/Generator/GeneratorWebView.swift` — `UIViewRepresentable` `WKWebView` loading `{serverURL}/#generator`; loading/error states; inject CSS to hide web navbar if shown
-- [ ] `Services/GeneratorService.swift` (`GET /generator/status`, `GET/POST /generator/presets`, `DELETE /generator/presets/{id}`)
-- [ ] `Views/Generator/GeneratorPresetsView.swift` — native preset list + delete fallback
-- [ ] Add Generator row to More
+- [x] `Views/Generator/GeneratorView.swift` — `WKWebView` loading `{serverURL}/#generator`, CSS injection hides web navbar, reload button
+- [x] `Services/GeneratorService.swift` (status, presets list/delete)
+- [x] `Views/Generator/GeneratorPresetsView.swift` — native preset list + swipe delete
+- [x] Add Generator row to More
+
+Note: if the web page fails to load over plain http on device, add an ATS exception (NSAllowsLocalNetworking) to the generated Info.plist — verify on hardware.
 
 ## Phase 2.1 — Ideas board
 Endpoints: `/ideas` CRUD, `PATCH /ideas/{id}/status`, `POST /ideas/import`, `GET /ideas/tags/all`, `/ideas/stats/overview`, `GET /ideas/url/validate`, `POST /ideas/url/preview`, `GET /ideas/url/platforms`

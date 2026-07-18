@@ -59,6 +59,9 @@
 		A1000001229F0226 /* CustomerListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0227 /* CustomerListView.swift */; };
 		A1000001229F0228 /* OrderSourcesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0229 /* OrderSourcesView.swift */; };
 		A1000001229F022A /* JobFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F022B /* JobFormView.swift */; };
+		A1000001229F022D /* GeneratorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F022E /* GeneratorService.swift */; };
+		A1000001229F022F /* GeneratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0230 /* GeneratorView.swift */; };
+		A1000001229F0231 /* GeneratorPresetsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0232 /* GeneratorPresetsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -126,6 +129,9 @@
 		A1000001229F0227 /* CustomerListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomerListView.swift; sourceTree = "<group>"; };
 		A1000001229F0229 /* OrderSourcesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderSourcesView.swift; sourceTree = "<group>"; };
 		A1000001229F022B /* JobFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobFormView.swift; sourceTree = "<group>"; };
+		A1000001229F022E /* GeneratorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratorService.swift; sourceTree = "<group>"; };
+		A1000001229F0230 /* GeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratorView.swift; sourceTree = "<group>"; };
+		A1000001229F0232 /* GeneratorPresetsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratorPresetsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -233,6 +239,7 @@
 				A1000001229F0039 /* Library */,
 				A1000001229F003A /* Materials */,
 				A1000001229F022C /* Orders */,
+				A1000001229F0233 /* Generator */,
 				A1000001229F0206 /* More */,
 			);
 			path = Views;
@@ -276,6 +283,7 @@
 				A1000001229F0051 /* CameraService.swift */,
 				A1000001229F0053 /* JobService.swift */,
 				A1000001229F021D /* OrderService.swift */,
+				A1000001229F022E /* GeneratorService.swift */,
 				A1000001229F00B3 /* LibraryService.swift */,
 				A1000001229F0057 /* MaterialService.swift */,
 				A1000001229F00B5 /* NotificationService.swift */,
@@ -359,6 +367,15 @@
 				A1000001229F021A /* ConsumptionHistoryView.swift */,
 			);
 			path = Materials;
+			sourceTree = "<group>";
+		};
+		A1000001229F0233 /* Generator */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F0230 /* GeneratorView.swift */,
+				A1000001229F0232 /* GeneratorPresetsView.swift */,
+			);
+			path = Generator;
 			sourceTree = "<group>";
 		};
 		A1000001229F022C /* Orders */ = {
@@ -523,6 +540,9 @@
 				A1000001229F0226 /* CustomerListView.swift in Sources */,
 				A1000001229F0228 /* OrderSourcesView.swift in Sources */,
 				A1000001229F022A /* JobFormView.swift in Sources */,
+				A1000001229F022D /* GeneratorService.swift in Sources */,
+				A1000001229F022F /* GeneratorView.swift in Sources */,
+				A1000001229F0231 /* GeneratorPresetsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
