@@ -106,6 +106,14 @@ struct SettingsView: View {
                 }
             }
 
+            Section("Server Settings") {
+                NavigationLink {
+                    ServerSettingsView()
+                } label: {
+                    Label("Application Settings", systemImage: "gearshape.2")
+                }
+            }
+
             Section("Refresh") {
                 Picker("Refresh Interval", selection: $refreshInterval) {
                     Text("1 second").tag(1.0)

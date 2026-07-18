@@ -815,3 +815,65 @@ final class FileServiceModelTests: XCTestCase {
         XCTAssertEqual(settings.enabled, true)
     }
 }
+
+final class ServerSettingsModelTests: XCTestCase {
+
+    func testServerSettingsDecoding() throws {
+        let json = """
+        {
+            "database_path": "/data/printernizer.db",
+            "host": "0.0.0.0",
+            "port": 8000,
+            "debug": false,
+            "environment": "production",
+            "log_level": "info",
+            "timezone": "Europe/Berlin",
+            "currency": "EUR",
+            "vat_rate": 19.0,
+            "downloads_path": "/data/downloads",
+            "max_file_size": 104857600,
+            "monitoring_interval": 30,
+            "connection_timeout": 10,
+            "cors_origins": [],
+            "job_creation_auto_create": true,
+            "gcode_optimize_print_only": true,
+            "gcode_optimization_max_lines": 100000,
+            "gcode_render_max_lines": 100000,
+            "enable_upload": true,
+            "max_upload_size_mb": 50,
+            "allowed_upload_extensions": ".stl,.3mf",
+            "library_enabled": true,
+            "library_path": "/data/library",
+            "library_auto_organize": true,
+            "library_auto_extract_metadata": true,
+            "library_auto_deduplicate": true,
+            "library_preserve_originals": false,
+            "library_checksum_algorithm": "sha256",
+            "library_processing_workers": 2,
+            "library_search_enabled": true,
+            "library_search_min_length": 2,
+            "timelapse_enabled": true,
+            "timelapse_cleanup_age_days": 30
+        }
+        """.data(using: .utf8)!
+
+        let settings = try APIConfiguration.makeDecoder().decode(ServerSettings.self, from: json)
+        XCTAssertEqual(settings.vatRate, 19.0)
+        XCTAssertEqual(settings.jobCreationAutoCreate, true)
+        XCTAssertEqual(settings.maxUploadSizeMb, 50)
+        XCTAssertEqual(settings.timelapseCleanupAgeDays, 30)
+    }
+
+    func testUpdateEncodesOnlyProvidedFields() throws {
+        var update = ServerSettingsUpdate()
+        update.vatRate = 7.0
+        update.libraryEnabled = true
+
+        let data = try APIConfiguration.makeEncoder().encode(update)
+        let object = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        XCTAssertEqual(object["vat_rate"] as? Double, 7.0)
+        XCTAssertEqual(object["library_enabled"] as? Bool, true)
+        XCTAssertNil(object["log_level"])
+        XCTAssertNil(object["monitoring_interval"])
+    }
+}
