@@ -3,6 +3,7 @@ import SwiftUI
 /// Destinations reachable from the More tab. New feature areas get a case
 /// here instead of a new root tab, keeping the tab bar at five items.
 enum MoreDestination: Hashable {
+    case search
     case materials
     case ideas
     case timelapses
@@ -15,6 +16,10 @@ struct MoreView: View {
         NavigationStack {
             List {
                 Section {
+                    NavigationLink(value: MoreDestination.search) {
+                        Label("Search", systemImage: "magnifyingglass")
+                    }
+
                     NavigationLink(value: MoreDestination.materials) {
                         Label("Materials", systemImage: "cylinder")
                     }
@@ -41,6 +46,8 @@ struct MoreView: View {
             .navigationTitle("More")
             .navigationDestination(for: MoreDestination.self) { destination in
                 switch destination {
+                case .search:
+                    SearchView()
                 case .materials:
                     MaterialListView()
                 case .ideas:
