@@ -1,39 +1,47 @@
 import SwiftUI
 
+enum AppTab: Hashable {
+    case dashboard
+    case printers
+    case jobs
+    case library
+    case more
+}
+
 struct ContentView: View {
-    @State private var selectedTab = 0
+    @State private var selectedTab: AppTab = .dashboard
 
     var body: some View {
         TabView(selection: $selectedTab) {
+            DashboardView()
+                .tabItem {
+                    Label("Dashboard", systemImage: "square.grid.2x2")
+                }
+                .tag(AppTab.dashboard)
+
             PrinterListView()
                 .tabItem {
                     Label("Printers", systemImage: "printer.fill")
                 }
-                .tag(0)
+                .tag(AppTab.printers)
 
             JobListView()
                 .tabItem {
                     Label("Jobs", systemImage: "doc.text")
                 }
-                .tag(1)
+                .tag(AppTab.jobs)
 
             LibraryListView()
                 .tabItem {
                     Label("Library", systemImage: "books.vertical")
                 }
-                .tag(2)
+                .tag(AppTab.library)
 
-            MaterialListView()
+            MoreView()
                 .tabItem {
-                    Label("Materials", systemImage: "cylinder")
+                    Label("More", systemImage: "ellipsis")
                 }
-                .tag(3)
-
-            SettingsView()
-                .tabItem {
-                    Label("Settings", systemImage: "gear")
-                }
-                .tag(4)
+                .tag(AppTab.more)
         }
     }
 }

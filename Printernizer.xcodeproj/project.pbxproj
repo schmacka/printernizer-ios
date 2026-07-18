@@ -39,6 +39,8 @@
 		A1000001229F0092 /* MaterialDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0093 /* MaterialDetailView.swift */; };
 		A1000001229F00A0 /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F00A1 /* QRScannerView.swift */; };
 		A1000001229F00B0 /* APIConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F00B1 /* APIConfiguration.swift */; };
+		A1000001229F0201 /* MoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0202 /* MoreView.swift */; };
+		A1000001229F0203 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0204 /* DashboardView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,6 +88,8 @@
 		A1000001229F0093 /* MaterialDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaterialDetailView.swift; sourceTree = "<group>"; };
 		A1000001229F00A1 /* QRScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerView.swift; sourceTree = "<group>"; };
 		A1000001229F00B1 /* APIConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIConfiguration.swift; sourceTree = "<group>"; };
+		A1000001229F0202 /* MoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreView.swift; sourceTree = "<group>"; };
+		A1000001229F0204 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -182,6 +186,7 @@
 		A1000001229F0030 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				A1000001229F0205 /* Dashboard */,
 				A1000001229F0033 /* Printer */,
 				A1000001229F0034 /* PrintJob */,
 				A1000001229F0035 /* Settings */,
@@ -190,8 +195,25 @@
 				A1000001229F0038 /* Jobs */,
 				A1000001229F0039 /* Library */,
 				A1000001229F003A /* Materials */,
+				A1000001229F0206 /* More */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		A1000001229F0205 /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F0204 /* DashboardView.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
+		A1000001229F0206 /* More */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F0202 /* MoreView.swift */,
+			);
+			path = More;
 			sourceTree = "<group>";
 		};
 		A1000001229F0031 /* ViewModels */ = {
@@ -411,6 +433,8 @@
 				A1000001229F0090 /* MaterialListView.swift in Sources */,
 				A1000001229F0092 /* MaterialDetailView.swift in Sources */,
 				A1000001229F00A0 /* QRScannerView.swift in Sources */,
+				A1000001229F0201 /* MoreView.swift in Sources */,
+				A1000001229F0203 /* DashboardView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

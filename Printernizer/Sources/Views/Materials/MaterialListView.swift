@@ -14,93 +14,93 @@ struct MaterialListView: View {
         var id: String { url.absoluteString }
     }
 
+    // Shown as a pushed destination from the More tab; the enclosing
+    // NavigationStack is provided by MoreView.
     var body: some View {
-        NavigationStack {
-            Group {
-                if viewModel.isLoading && viewModel.materials.isEmpty {
-                    ProgressView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if viewModel.materials.isEmpty {
-                    ContentUnavailableView(
-                        "No Materials",
-                        systemImage: "cylinder",
-                        description: Text("Add filament spools to track your inventory.")
-                    )
-                } else {
-                    materialList
-                }
+        Group {
+            if viewModel.isLoading && viewModel.materials.isEmpty {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if viewModel.materials.isEmpty {
+                ContentUnavailableView(
+                    "No Materials",
+                    systemImage: "cylinder",
+                    description: Text("Add filament spools to track your inventory.")
+                )
+            } else {
+                materialList
             }
-            .navigationTitle("Materials")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Menu {
-                        Toggle("Low Stock Only", isOn: $showLowStockOnly)
-                            .onChange(of: showLowStockOnly) { _, newValue in
-                                Task {
-                                    await viewModel.loadMaterials(lowStock: newValue)
-                                }
+        }
+        .navigationTitle("Materials")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    Toggle("Low Stock Only", isOn: $showLowStockOnly)
+                        .onChange(of: showLowStockOnly) { _, newValue in
+                            Task {
+                                await viewModel.loadMaterials(lowStock: newValue)
                             }
-
-                        Divider()
-
-                        Button {
-                            Task { await exportInventory(format: .csv) }
-                        } label: {
-                            Label("Export as CSV", systemImage: "square.and.arrow.up")
                         }
 
-                        Button {
-                            Task { await exportInventory(format: .excel) }
-                        } label: {
-                            Label("Export as Excel", systemImage: "square.and.arrow.up")
-                        }
+                    Divider()
+
+                    Button {
+                        Task { await exportInventory(format: .csv) }
                     } label: {
-                        if isExporting {
-                            ProgressView()
-                        } else {
-                            Label("Filter", systemImage: "line.3.horizontal.decrease.circle")
-                        }
+                        Label("Export as CSV", systemImage: "square.and.arrow.up")
                     }
-                    .disabled(isExporting)
-                }
-            }
-            .refreshable {
-                await viewModel.loadMaterials(lowStock: showLowStockOnly)
-            }
-            .task {
-                guard APIConfiguration.isConfigured else { return }
-                await viewModel.loadMaterials()
-                await viewModel.loadStats()
-            }
-            .sheet(item: $selectedMaterial) { material in
-                NavigationStack {
-                    MaterialDetailView(material: material) {
-                        materialToDelete = material
-                        showDeleteConfirmation = true
+
+                    Button {
+                        Task { await exportInventory(format: .excel) }
+                    } label: {
+                        Label("Export as Excel", systemImage: "square.and.arrow.up")
+                    }
+                } label: {
+                    if isExporting {
+                        ProgressView()
+                    } else {
+                        Label("Filter", systemImage: "line.3.horizontal.decrease.circle")
                     }
                 }
+                .disabled(isExporting)
             }
-            .confirmationDialog("Delete Material?", isPresented: $showDeleteConfirmation) {
-                Button("Delete", role: .destructive) {
-                    if let material = materialToDelete {
-                        Task {
-                            await viewModel.deleteMaterial(material)
-                            selectedMaterial = nil
-                        }
+        }
+        .refreshable {
+            await viewModel.loadMaterials(lowStock: showLowStockOnly)
+        }
+        .task {
+            guard APIConfiguration.isConfigured else { return }
+            await viewModel.loadMaterials()
+            await viewModel.loadStats()
+        }
+        .sheet(item: $selectedMaterial) { material in
+            NavigationStack {
+                MaterialDetailView(material: material) {
+                    materialToDelete = material
+                    showDeleteConfirmation = true
+                }
+            }
+        }
+        .confirmationDialog("Delete Material?", isPresented: $showDeleteConfirmation) {
+            Button("Delete", role: .destructive) {
+                if let material = materialToDelete {
+                    Task {
+                        await viewModel.deleteMaterial(material)
+                        selectedMaterial = nil
                     }
                 }
-                Button("Cancel", role: .cancel) { }
-            } message: {
-                Text("Are you sure you want to delete this material from your inventory?")
             }
-            .alert("Error", isPresented: $viewModel.showError) {
-                Button("OK", role: .cancel) { }
-            } message: {
-                Text(viewModel.errorMessage)
-            }
-            .sheet(item: $exportedFile) { file in
-                ShareSheetView(url: file.url)
-            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Are you sure you want to delete this material from your inventory?")
+        }
+        .alert("Error", isPresented: $viewModel.showError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(viewModel.errorMessage)
+        }
+        .sheet(item: $exportedFile) { file in
+            ShareSheetView(url: file.url)
         }
     }
 
@@ -321,5 +321,7 @@ struct ShareSheetView: UIViewControllerRepresentable {
 }
 
 #Preview {
-    MaterialListView()
+    NavigationStack {
+        MaterialListView()
+    }
 }

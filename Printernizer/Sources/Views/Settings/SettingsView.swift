@@ -32,122 +32,122 @@ struct SettingsView: View {
         }
     }
 
+    // Shown as a pushed destination from the More tab; the enclosing
+    // NavigationStack is provided by MoreView.
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Server") {
-                    TextField("Server URL", text: $serverURLDraft)
-                        .textContentType(.URL)
-                        .keyboardType(.URL)
-                        .autocapitalization(.none)
-                        .autocorrectionDisabled()
-                        .focused($serverURLFieldFocused)
-                        .onChange(of: serverURLDraft) { _, _ in
-                            connectionStatus = nil
-                            serverInfo = nil
-                        }
-                        .onSubmit {
-                            serverURLFieldFocused = false
-                        }
+        Form {
+            Section("Server") {
+                TextField("Server URL", text: $serverURLDraft)
+                    .textContentType(.URL)
+                    .keyboardType(.URL)
+                    .autocapitalization(.none)
+                    .autocorrectionDisabled()
+                    .focused($serverURLFieldFocused)
+                    .onChange(of: serverURLDraft) { _, _ in
+                        connectionStatus = nil
+                        serverInfo = nil
+                    }
+                    .onSubmit {
+                        serverURLFieldFocused = false
+                    }
 
+                Button {
+                    showQRScanner = true
+                } label: {
+                    Label("Scan QR Code", systemImage: "qrcode.viewfinder")
+                }
+
+                HStack {
                     Button {
-                        showQRScanner = true
+                        Task {
+                            await testConnection()
+                        }
                     } label: {
-                        Label("Scan QR Code", systemImage: "qrcode.viewfinder")
-                    }
-
-                    HStack {
-                        Button {
-                            Task {
-                                await testConnection()
-                            }
-                        } label: {
-                            HStack {
-                                if isTesting {
-                                    ProgressView()
-                                        .scaleEffect(0.8)
-                                } else {
-                                    Text("Test Connection")
-                                }
+                        HStack {
+                            if isTesting {
+                                ProgressView()
+                                    .scaleEffect(0.8)
+                            } else {
+                                Text("Test Connection")
                             }
                         }
-                        .disabled(isTesting || serverURLDraft.isEmpty)
-
-                        Spacer()
-
-                        if let status = connectionStatus {
-                            Image(systemName: status.isSuccess ? "checkmark.circle.fill" : "xmark.circle.fill")
-                                .foregroundStyle(status.isSuccess ? .green : .red)
-                        }
                     }
+                    .disabled(isTesting || serverURLDraft.isEmpty)
 
-                    if case .failure(let message) = connectionStatus {
-                        Text(message)
-                            .font(.caption)
-                            .foregroundStyle(.red)
+                    Spacer()
+
+                    if let status = connectionStatus {
+                        Image(systemName: status.isSuccess ? "checkmark.circle.fill" : "xmark.circle.fill")
+                            .foregroundStyle(status.isSuccess ? .green : .red)
                     }
                 }
 
-                if let info = serverInfo {
-                    Section("Server Info") {
-                        if let version = info.version {
-                            LabeledContent("Backend Version", value: version)
-                        }
-                        if let environment = info.environment {
-                            LabeledContent("Environment", value: environment)
-                        }
-                        if let timezone = info.timezone {
-                            LabeledContent("Timezone", value: timezone)
-                        }
-                        if let uptime = info.uptimeSeconds {
-                            LabeledContent("Uptime", value: formatUptime(uptime))
-                        }
-                    }
-                }
-
-                Section("Refresh") {
-                    Picker("Refresh Interval", selection: $refreshInterval) {
-                        Text("1 second").tag(1.0)
-                        Text("5 seconds").tag(5.0)
-                        Text("10 seconds").tag(10.0)
-                        Text("30 seconds").tag(30.0)
-                    }
-                }
-
-                Section("Notifications") {
-                    Toggle("Enable Notifications", isOn: $notificationsEnabled)
-
-                    if notificationsEnabled {
-                        Toggle("Print Completed", isOn: $notifyPrintCompleted)
-                        Toggle("Print Failed", isOn: $notifyPrintFailed)
-                        Toggle("Printer Offline", isOn: $notifyPrinterOffline)
-                    }
-                }
-
-                Section("About") {
-                    LabeledContent("Version", value: appVersion)
-                    LabeledContent("Build", value: buildNumber)
-
-                    Link("View on GitHub", destination: URL(string: "https://github.com/schmacka/printernizer-ios")!)
+                if case .failure(let message) = connectionStatus {
+                    Text(message)
+                        .font(.caption)
+                        .foregroundStyle(.red)
                 }
             }
-            .navigationTitle("Settings")
-            .onAppear {
-                serverURLDraft = serverURL
-            }
-            .onChange(of: serverURLFieldFocused) { _, focused in
-                if !focused {
-                    commitServerURL()
+
+            if let info = serverInfo {
+                Section("Server Info") {
+                    if let version = info.version {
+                        LabeledContent("Backend Version", value: version)
+                    }
+                    if let environment = info.environment {
+                        LabeledContent("Environment", value: environment)
+                    }
+                    if let timezone = info.timezone {
+                        LabeledContent("Timezone", value: timezone)
+                    }
+                    if let uptime = info.uptimeSeconds {
+                        LabeledContent("Uptime", value: formatUptime(uptime))
+                    }
                 }
             }
-            .sheet(isPresented: $showQRScanner) {
-                QRScannerView { scannedURL in
-                    serverURLDraft = scannedURL
-                    serverURL = scannedURL
-                    apiService.baseURL = scannedURL
-                    connectionStatus = nil
-                    reconnectWebSocket()
+
+            Section("Refresh") {
+                Picker("Refresh Interval", selection: $refreshInterval) {
+                    Text("1 second").tag(1.0)
+                    Text("5 seconds").tag(5.0)
+                    Text("10 seconds").tag(10.0)
+                    Text("30 seconds").tag(30.0)
                 }
+            }
+
+            Section("Notifications") {
+                Toggle("Enable Notifications", isOn: $notificationsEnabled)
+
+                if notificationsEnabled {
+                    Toggle("Print Completed", isOn: $notifyPrintCompleted)
+                    Toggle("Print Failed", isOn: $notifyPrintFailed)
+                    Toggle("Printer Offline", isOn: $notifyPrinterOffline)
+                }
+            }
+
+            Section("About") {
+                LabeledContent("Version", value: appVersion)
+                LabeledContent("Build", value: buildNumber)
+
+                Link("View on GitHub", destination: URL(string: "https://github.com/schmacka/printernizer-ios")!)
+            }
+        }
+        .navigationTitle("Settings")
+        .onAppear {
+            serverURLDraft = serverURL
+        }
+        .onChange(of: serverURLFieldFocused) { _, focused in
+            if !focused {
+                commitServerURL()
+            }
+        }
+        .sheet(isPresented: $showQRScanner) {
+            QRScannerView { scannedURL in
+                serverURLDraft = scannedURL
+                serverURL = scannedURL
+                apiService.baseURL = scannedURL
+                connectionStatus = nil
+                reconnectWebSocket()
             }
         }
     }
@@ -217,7 +217,9 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView()
-        .environmentObject(APIService())
-        .environmentObject(WebSocketService())
+    NavigationStack {
+        SettingsView()
+    }
+    .environmentObject(APIService())
+    .environmentObject(WebSocketService())
 }
