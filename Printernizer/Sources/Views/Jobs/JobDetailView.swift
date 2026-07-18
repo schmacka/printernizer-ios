@@ -123,6 +123,10 @@ struct JobDetailView: View {
 
             detailRow(label: "Printer", value: job.printerType)
 
+            if let customer = job.customerName, !customer.isEmpty {
+                detailRow(label: "Customer", value: customer)
+            }
+
             if let date = job.formattedDate {
                 detailRow(label: "Started", value: date)
             }
@@ -230,6 +234,8 @@ struct JobDetailView: View {
                 materialCost: 0.50,
                 powerCost: 0.10,
                 isBusiness: false,
+                customerName: nil,
+                orderId: nil,
                 createdAt: "2024-01-15T10:30:00Z",
                 updatedAt: "2024-01-15T10:30:00Z",
                 progressPercent: 45,

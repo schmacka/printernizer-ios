@@ -528,3 +528,67 @@ final class FormatterTests: XCTestCase {
         XCTAssertNil(Formatters.parseISODate("not-a-date"))
     }
 }
+
+final class OrderModelTests: XCTestCase {
+
+    func testOrderResponseDecoding() throws {
+        let json = """
+        {
+            "id": "order-1",
+            "title": "Vase Set",
+            "customer_id": "cust-1",
+            "source_id": null,
+            "status": "planned",
+            "quoted_price": 45.0,
+            "payment_status": "unpaid",
+            "notes": "Deliver soon",
+            "due_date": "2026-07-25",
+            "created_at": "2026-07-18T10:00:00",
+            "updated_at": "2026-07-18T10:00:00",
+            "customer": {"id": "cust-1", "name": "Anna", "email": null, "phone": null, "address": null, "notes": null, "order_count": 3, "created_at": "2026-01-01T00:00:00", "updated_at": "2026-01-01T00:00:00"},
+            "source": {"id": "src-1", "name": "Etsy", "is_active": true, "created_at": "2026-01-01T00:00:00", "updated_at": "2026-01-01T00:00:00"},
+            "jobs": [{"id": "job-1", "job_name": "Vase 1", "status": "completed"}],
+            "files": [{"id": "of-1", "order_id": "order-1", "file_id": "abc", "url": null, "filename": "vase.stl", "file_type": "stl", "created_at": "2026-01-01T00:00:00"}],
+            "material_cost_eur": 6.5,
+            "energy_cost_eur": 1.2
+        }
+        """.data(using: .utf8)!
+
+        let order = try APIConfiguration.makeDecoder().decode(OrderResponse.self, from: json)
+        XCTAssertEqual(order.status, .planned)
+        XCTAssertEqual(order.status.next, .printed)
+        XCTAssertEqual(order.paymentStatus, .unpaid)
+        XCTAssertEqual(order.customer?.name, "Anna")
+        XCTAssertEqual(order.jobs?.first?.displayName, "Vase 1")
+        XCTAssertEqual(order.files?.first?.filename, "vase.stl")
+        XCTAssertEqual(order.materialCostEur, 6.5)
+    }
+
+    func testOrderStatusFlow() {
+        XCTAssertEqual(OrderStatus.new.next, .planned)
+        XCTAssertEqual(OrderStatus.planned.next, .printed)
+        XCTAssertEqual(OrderStatus.printed.next, .delivered)
+        XCTAssertNil(OrderStatus.delivered.next)
+        XCTAssertNil(OrderStatus.cancelled.next)
+    }
+
+    func testJobCreateRequestEncoding() throws {
+        let request = JobCreateRequest(
+            printerId: "printer-1",
+            jobName: "Test",
+            filename: nil,
+            fileId: nil,
+            estimatedDuration: nil,
+            materialCost: 2.5,
+            isBusiness: true,
+            customerName: "Anna"
+        )
+
+        let data = try APIConfiguration.makeEncoder().encode(request)
+        let object = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        XCTAssertEqual(object["printer_id"] as? String, "printer-1")
+        XCTAssertEqual(object["is_business"] as? Bool, true)
+        XCTAssertEqual(object["customer_name"] as? String, "Anna")
+        XCTAssertNil(object["filename"])
+    }
+}

@@ -40,11 +40,11 @@ Fixed along the way: `MaterialStats` DTO never decoded against the real backend 
 
 ## Phase 1.4 — Business: job creation + Orders/Customers
 Endpoints: `POST /jobs`, `PUT/DELETE /jobs/{id}`, `GET /jobs/export`; `/orders` CRUD + `POST/DELETE /orders/{id}/jobs[/{job_id}]` + `/orders/{id}/files[/{order_file_id}]`; `/customers` CRUD; `/order-sources` CRUD
-- [ ] Extend `JobService`: createJob (is_business, customer, costs), updateJob, deleteJob, exportJobs (temp-file + share sheet — copy `MaterialService.exportMaterials` pattern)
-- [ ] `Views/Jobs/JobFormView.swift` — business toggle → customer field, cost preview (display backend-computed EUR/VAT only, never recompute client-side; use `Formatters.eur`)
-- [ ] `JobListView`: segmented **Jobs | Orders**; surface existing `printer_id`/`is_business` filters
-- [ ] `Services/OrderService.swift` (orders, customers, order-sources; DTOs from backend `src/models/order.py`)
-- [ ] `Views/Orders/OrderListView.swift` (status filter new/planned/printed/delivered), `OrderDetailView.swift` (advance status, linked jobs/files w/ unlink, attach-library-file picker reusing library rows), `OrderFormView.swift`, `CustomerListView.swift`, `OrderSourcesView.swift`
+- [x] Extend `JobService`: createJob (is_business, customer, material cost), updateJob, deleteJob, exportJobs CSV (temp-file + share sheet); `JobResponse` gains customer_name/order_id
+- [x] `Views/Jobs/JobFormView.swift` — printer picker, business toggle → customer + material cost
+- [x] `JobListView`: segmented **Jobs | Orders**, business/private filter, CSV export, business badge on rows
+- [x] `Services/OrderService.swift` (orders + link job/attach file, customers, order-sources; OrderStatus/PaymentStatus enums with advance-status flow)
+- [x] `Views/Orders/`: `OrderListView` (status filter), `OrderDetailView` (advance status, cancel, linked jobs/files with unlink, job + library-file pickers), `OrderFormView` (customer/source pickers, quoted price, payment status, due date), `CustomerListView` (+inline form), `OrderSourcesView`
 
 ## Phase 1.5 — Generator (WKWebView)
 Native JSCAD/three.js port is infeasible; embed the web page.

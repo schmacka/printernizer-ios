@@ -51,6 +51,14 @@
 		A1000001229F0215 /* MaterialFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0216 /* MaterialFormView.swift */; };
 		A1000001229F0217 /* RecordConsumptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0218 /* RecordConsumptionView.swift */; };
 		A1000001229F0219 /* ConsumptionHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F021A /* ConsumptionHistoryView.swift */; };
+		A1000001229F021C /* OrderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F021D /* OrderService.swift */; };
+		A1000001229F021E /* OrderListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F021F /* OrderListView.swift */; };
+		A1000001229F0220 /* OrderDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0221 /* OrderDetailView.swift */; };
+		A1000001229F0222 /* OrderFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0223 /* OrderFormView.swift */; };
+		A1000001229F0224 /* OrderPickers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0225 /* OrderPickers.swift */; };
+		A1000001229F0226 /* CustomerListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0227 /* CustomerListView.swift */; };
+		A1000001229F0228 /* OrderSourcesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F0229 /* OrderSourcesView.swift */; };
+		A1000001229F022A /* JobFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001229F022B /* JobFormView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -110,6 +118,14 @@
 		A1000001229F0216 /* MaterialFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaterialFormView.swift; sourceTree = "<group>"; };
 		A1000001229F0218 /* RecordConsumptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordConsumptionView.swift; sourceTree = "<group>"; };
 		A1000001229F021A /* ConsumptionHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumptionHistoryView.swift; sourceTree = "<group>"; };
+		A1000001229F021D /* OrderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderService.swift; sourceTree = "<group>"; };
+		A1000001229F021F /* OrderListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderListView.swift; sourceTree = "<group>"; };
+		A1000001229F0221 /* OrderDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetailView.swift; sourceTree = "<group>"; };
+		A1000001229F0223 /* OrderFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderFormView.swift; sourceTree = "<group>"; };
+		A1000001229F0225 /* OrderPickers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderPickers.swift; sourceTree = "<group>"; };
+		A1000001229F0227 /* CustomerListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomerListView.swift; sourceTree = "<group>"; };
+		A1000001229F0229 /* OrderSourcesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderSourcesView.swift; sourceTree = "<group>"; };
+		A1000001229F022B /* JobFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobFormView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -216,6 +232,7 @@
 				A1000001229F0038 /* Jobs */,
 				A1000001229F0039 /* Library */,
 				A1000001229F003A /* Materials */,
+				A1000001229F022C /* Orders */,
 				A1000001229F0206 /* More */,
 			);
 			path = Views;
@@ -258,6 +275,7 @@
 				A1000001229F001E /* WebSocketService.swift */,
 				A1000001229F0051 /* CameraService.swift */,
 				A1000001229F0053 /* JobService.swift */,
+				A1000001229F021D /* OrderService.swift */,
 				A1000001229F00B3 /* LibraryService.swift */,
 				A1000001229F0057 /* MaterialService.swift */,
 				A1000001229F00B5 /* NotificationService.swift */,
@@ -317,6 +335,7 @@
 			children = (
 				A1000001229F0071 /* JobListView.swift */,
 				A1000001229F0073 /* JobDetailView.swift */,
+				A1000001229F022B /* JobFormView.swift */,
 			);
 			path = Jobs;
 			sourceTree = "<group>";
@@ -340,6 +359,19 @@
 				A1000001229F021A /* ConsumptionHistoryView.swift */,
 			);
 			path = Materials;
+			sourceTree = "<group>";
+		};
+		A1000001229F022C /* Orders */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001229F021F /* OrderListView.swift */,
+				A1000001229F0221 /* OrderDetailView.swift */,
+				A1000001229F0223 /* OrderFormView.swift */,
+				A1000001229F0225 /* OrderPickers.swift */,
+				A1000001229F0227 /* CustomerListView.swift */,
+				A1000001229F0229 /* OrderSourcesView.swift */,
+			);
+			path = Orders;
 			sourceTree = "<group>";
 		};
 		A1000001229F021B /* Utilities */ = {
@@ -483,6 +515,14 @@
 				A1000001229F0215 /* MaterialFormView.swift in Sources */,
 				A1000001229F0217 /* RecordConsumptionView.swift in Sources */,
 				A1000001229F0219 /* ConsumptionHistoryView.swift in Sources */,
+				A1000001229F021C /* OrderService.swift in Sources */,
+				A1000001229F021E /* OrderListView.swift in Sources */,
+				A1000001229F0220 /* OrderDetailView.swift in Sources */,
+				A1000001229F0222 /* OrderFormView.swift in Sources */,
+				A1000001229F0224 /* OrderPickers.swift in Sources */,
+				A1000001229F0226 /* CustomerListView.swift in Sources */,
+				A1000001229F0228 /* OrderSourcesView.swift in Sources */,
+				A1000001229F022A /* JobFormView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,67 +1,159 @@
 import SwiftUI
 
+/// Jobs tab root: a segmented control switches between print jobs
+/// and customer orders (business features).
 struct JobListView: View {
+    enum Section: String, CaseIterable, Identifiable {
+        case jobs = "Jobs"
+        case orders = "Orders"
+
+        var id: String { rawValue }
+    }
+
     @StateObject private var viewModel = JobListViewModel()
+    @State private var section: Section = .jobs
     @State private var selectedFilter: JobFilter = .all
+    @State private var businessFilter: Bool?
     @State private var selectedJob: JobResponse?
+    @State private var showNewJob = false
+    @State private var exportedFile: URL?
+    @State private var isExporting = false
 
     var body: some View {
         NavigationStack {
             Group {
-                if viewModel.isLoading && viewModel.jobs.isEmpty {
-                    ProgressView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if viewModel.jobs.isEmpty {
-                    ContentUnavailableView(
-                        "No Print Jobs",
-                        systemImage: "doc.text",
-                        description: Text("Print jobs will appear here when you start printing.")
-                    )
-                } else {
-                    jobList
+                switch section {
+                case .jobs:
+                    jobsContent
+                case .orders:
+                    OrderListView()
                 }
             }
-            .navigationTitle("Jobs")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Menu {
+            .navigationTitle(section == .jobs ? "Jobs" : "Orders")
+            .safeAreaInset(edge: .top) {
+                Picker("Section", selection: $section) {
+                    ForEach(Section.allCases) { section in
+                        Text(section.rawValue).tag(section)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
+                .padding(.bottom, 8)
+                .background(.bar)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var jobsContent: some View {
+        Group {
+            if viewModel.isLoading && viewModel.jobs.isEmpty {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if viewModel.jobs.isEmpty {
+                ContentUnavailableView {
+                    Label("No Print Jobs", systemImage: "doc.text")
+                } description: {
+                    Text("Print jobs will appear here when you start printing.")
+                } actions: {
+                    Button("New Job") { showNewJob = true }
+                }
+            } else {
+                jobList
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showNewJob = true
+                } label: {
+                    Image(systemName: "plus")
+                }
+            }
+
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    Picker("Status", selection: $selectedFilter) {
                         ForEach(JobFilter.allCases, id: \.self) { filter in
-                            Button {
-                                selectedFilter = filter
-                                Task {
-                                    await viewModel.loadJobs(status: filter.apiValue)
-                                }
-                            } label: {
-                                if selectedFilter == filter {
-                                    Label(filter.displayName, systemImage: "checkmark")
-                                } else {
-                                    Text(filter.displayName)
-                                }
-                            }
+                            Text(filter.displayName).tag(filter)
                         }
+                    }
+
+                    Picker("Type", selection: $businessFilter) {
+                        Text("All Types").tag(Bool?.none)
+                        Text("Business").tag(Bool?.some(true))
+                        Text("Private").tag(Bool?.some(false))
+                    }
+
+                    Divider()
+
+                    Button {
+                        Task { await exportJobs() }
                     } label: {
+                        Label("Export as CSV", systemImage: "square.and.arrow.up")
+                    }
+                } label: {
+                    if isExporting {
+                        ProgressView()
+                    } else {
                         Label("Filter", systemImage: "line.3.horizontal.decrease.circle")
                     }
                 }
-            }
-            .refreshable {
-                await viewModel.loadJobs(status: selectedFilter.apiValue)
-            }
-            .task {
-                guard APIConfiguration.isConfigured else { return }
-                await viewModel.loadJobs()
-            }
-            .sheet(item: $selectedJob) { job in
-                NavigationStack {
-                    JobDetailView(job: job)
-                }
-            }
-            .alert("Error", isPresented: $viewModel.showError) {
-                Button("OK", role: .cancel) { }
-            } message: {
-                Text(viewModel.errorMessage)
+                .disabled(isExporting)
             }
         }
+        .onChange(of: selectedFilter) { _, _ in
+            Task { await reload() }
+        }
+        .onChange(of: businessFilter) { _, _ in
+            Task { await reload() }
+        }
+        .refreshable {
+            await reload()
+        }
+        .task {
+            guard APIConfiguration.isConfigured else { return }
+            await reload()
+        }
+        .sheet(item: $selectedJob) { job in
+            NavigationStack {
+                JobDetailView(job: job)
+            }
+        }
+        .sheet(isPresented: $showNewJob) {
+            JobFormView {
+                Task { await reload() }
+            }
+        }
+        .sheet(item: Binding(
+            get: { exportedFile.map(ExportedJobFile.init) },
+            set: { if $0 == nil { exportedFile = nil } }
+        )) { file in
+            ShareSheetView(url: file.url)
+        }
+        .alert("Error", isPresented: $viewModel.showError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(viewModel.errorMessage)
+        }
+    }
+
+    private struct ExportedJobFile: Identifiable {
+        let url: URL
+        var id: String { url.absoluteString }
+    }
+
+    private func reload() async {
+        await viewModel.loadJobs(status: selectedFilter.apiValue, isBusiness: businessFilter)
+    }
+
+    private func exportJobs() async {
+        isExporting = true
+        defer { isExporting = false }
+        exportedFile = await viewModel.exportJobs(
+            status: selectedFilter.apiValue,
+            isBusiness: businessFilter
+        )
     }
 
     private var jobList: some View {
@@ -79,7 +171,10 @@ struct JobListView: View {
                     .frame(maxWidth: .infinity)
                     .onAppear {
                         Task {
-                            await viewModel.loadMoreJobs(status: selectedFilter.apiValue)
+                            await viewModel.loadMoreJobs(
+                                status: selectedFilter.apiValue,
+                                isBusiness: businessFilter
+                            )
                         }
                     }
             }
@@ -101,9 +196,21 @@ struct JobRowView: View {
                 .frame(width: 10, height: 10)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(job.jobName)
-                    .font(.headline)
-                    .lineLimit(1)
+                HStack(spacing: 6) {
+                    Text(job.jobName)
+                        .font(.headline)
+                        .lineLimit(1)
+
+                    if job.isBusiness {
+                        Text("Business")
+                            .font(.caption2)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 1)
+                            .background(.blue.opacity(0.15))
+                            .foregroundStyle(.blue)
+                            .clipShape(Capsule())
+                    }
+                }
 
                 HStack(spacing: 8) {
                     if let filename = job.filename {
@@ -210,12 +317,12 @@ final class JobListViewModel: ObservableObject {
         currentPage < totalPages
     }
 
-    func loadJobs(status: String? = nil) async {
+    func loadJobs(status: String? = nil, isBusiness: Bool? = nil) async {
         isLoading = true
         currentPage = 1
 
         do {
-            let response = try await jobService.listJobs(status: status, page: 1)
+            let response = try await jobService.listJobs(status: status, isBusiness: isBusiness, page: 1)
             jobs = response.jobs
             totalPages = response.pagination.totalPages
         } catch {
@@ -226,14 +333,14 @@ final class JobListViewModel: ObservableObject {
         isLoading = false
     }
 
-    func loadMoreJobs(status: String? = nil) async {
+    func loadMoreJobs(status: String? = nil, isBusiness: Bool? = nil) async {
         guard !isLoading, hasMorePages else { return }
 
         isLoading = true
         currentPage += 1
 
         do {
-            let response = try await jobService.listJobs(status: status, page: currentPage)
+            let response = try await jobService.listJobs(status: status, isBusiness: isBusiness, page: currentPage)
             jobs.append(contentsOf: response.jobs)
             totalPages = response.pagination.totalPages
         } catch {
@@ -244,8 +351,19 @@ final class JobListViewModel: ObservableObject {
 
         isLoading = false
     }
+
+    func exportJobs(status: String?, isBusiness: Bool?) async -> URL? {
+        do {
+            return try await jobService.exportJobs(status: status, isBusiness: isBusiness)
+        } catch {
+            errorMessage = error.localizedDescription
+            showError = true
+            return nil
+        }
+    }
 }
 
 #Preview {
     JobListView()
+        .environmentObject(APIService())
 }
