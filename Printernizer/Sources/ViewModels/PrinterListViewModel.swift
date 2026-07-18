@@ -7,6 +7,8 @@ final class PrinterListViewModel: ObservableObject {
     @Published var showError = false
     @Published var errorMessage = ""
 
+    private let printerService = PrinterService()
+
     func loadPrinters(using apiService: APIService) async {
         guard !isLoading else { return }
 
@@ -24,6 +26,16 @@ final class PrinterListViewModel: ObservableObject {
     func refresh(using apiService: APIService) async {
         do {
             printers = try await apiService.fetchPrinters()
+        } catch {
+            errorMessage = error.localizedDescription
+            showError = true
+        }
+    }
+
+    func deletePrinter(_ printer: Printer) async {
+        do {
+            try await printerService.deletePrinter(id: printer.id)
+            printers.removeAll { $0.id == printer.id }
         } catch {
             errorMessage = error.localizedDescription
             showError = true

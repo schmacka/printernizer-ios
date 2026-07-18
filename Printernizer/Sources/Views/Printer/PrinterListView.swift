@@ -6,6 +6,10 @@ struct PrinterListView: View {
     @EnvironmentObject private var webSocketService: WebSocketService
     @AppStorage("refreshInterval") private var refreshInterval = 5.0
 
+    @State private var showAddPrinter = false
+    @State private var showDiscovery = false
+    @State private var printerToDelete: Printer?
+
     var body: some View {
         NavigationStack {
             Group {
@@ -18,17 +22,38 @@ struct PrinterListView: View {
                 } else if viewModel.isLoading && viewModel.printers.isEmpty {
                     ProgressView("Loading printers...")
                 } else if viewModel.printers.isEmpty {
-                    ContentUnavailableView(
-                        "No Printers",
-                        systemImage: "printer.fill",
-                        description: Text("Add a printer to get started")
-                    )
+                    ContentUnavailableView {
+                        Label("No Printers", systemImage: "printer.fill")
+                    } description: {
+                        Text("Add a printer to get started")
+                    } actions: {
+                        Button("Add Printer") { showAddPrinter = true }
+                        Button("Discover on Network") { showDiscovery = true }
+                    }
                 } else {
                     printerList
                 }
             }
             .navigationTitle("Printers")
             .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        Button {
+                            showAddPrinter = true
+                        } label: {
+                            Label("Add Printer", systemImage: "plus")
+                        }
+
+                        Button {
+                            showDiscovery = true
+                        } label: {
+                            Label("Discover on Network", systemImage: "antenna.radiowaves.left.and.right")
+                        }
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         Task {
@@ -69,6 +94,34 @@ struct PrinterListView: View {
                     viewModel.handlePrinterStatus(printerId: printerId, data: data)
                 }
             }
+            .sheet(isPresented: $showAddPrinter) {
+                PrinterFormView {
+                    Task { await viewModel.refresh(using: apiService) }
+                }
+            }
+            .sheet(isPresented: $showDiscovery) {
+                PrinterDiscoveryView {
+                    Task { await viewModel.refresh(using: apiService) }
+                }
+            }
+            .confirmationDialog(
+                "Delete Printer?",
+                isPresented: Binding(
+                    get: { printerToDelete != nil },
+                    set: { if !$0 { printerToDelete = nil } }
+                ),
+                presenting: printerToDelete
+            ) { printer in
+                Button("Delete \(printer.name)", role: .destructive) {
+                    Task {
+                        await viewModel.deletePrinter(printer)
+                        await viewModel.refresh(using: apiService)
+                    }
+                }
+                Button("Cancel", role: .cancel) { }
+            } message: { printer in
+                Text("\(printer.name) will be removed from Printernizer. Job history is kept.")
+            }
             .alert("Error", isPresented: $viewModel.showError) {
                 Button("OK", role: .cancel) {}
             } message: {
@@ -91,6 +144,13 @@ struct PrinterListView: View {
                         PrinterCardView(printer: printer)
                     }
                     .buttonStyle(.plain)
+                    .contextMenu {
+                        Button(role: .destructive) {
+                            printerToDelete = printer
+                        } label: {
+                            Label("Delete Printer", systemImage: "trash")
+                        }
+                    }
                 }
             }
             .padding()

@@ -8,11 +8,15 @@ final class PrinterDetailViewModel: ObservableObject {
     @Published var bedTemp: Double = 0
     @Published var bedTarget: Double = 0
     @Published var statistics: PrinterStatistics?
+    @Published var recentJobs: [RecentJobSummary] = []
+    @Published var isConnected = false
+    @Published var isPerformingAction = false
     @Published var isLoading = false
     @Published var showError = false
     @Published var errorMessage = ""
 
     private(set) var printer: Printer?
+    private let printerService = PrinterService()
 
     func loadDetails(for printer: Printer, using apiService: APIService) async {
         self.printer = printer
@@ -27,6 +31,41 @@ final class PrinterDetailViewModel: ObservableObject {
             bedTemp = details.bedTemp
             bedTarget = details.bedTarget
             statistics = details.statistics
+            recentJobs = details.recentJobs
+            isConnected = details.isConnected
+        } catch {
+            errorMessage = error.localizedDescription
+            showError = true
+        }
+    }
+
+    // MARK: - Management Actions
+
+    func toggleConnection(using apiService: APIService) async {
+        guard let printer else { return }
+        isPerformingAction = true
+        defer { isPerformingAction = false }
+
+        do {
+            if isConnected {
+                try await printerService.disconnect(printerId: printer.id)
+            } else {
+                try await printerService.connect(printerId: printer.id)
+            }
+            await loadDetails(for: printer, using: apiService)
+        } catch {
+            errorMessage = error.localizedDescription
+            showError = true
+        }
+    }
+
+    func downloadCurrentJob() async {
+        guard let printer else { return }
+        isPerformingAction = true
+        defer { isPerformingAction = false }
+
+        do {
+            try await printerService.downloadCurrentJob(printerId: printer.id)
         } catch {
             errorMessage = error.localizedDescription
             showError = true

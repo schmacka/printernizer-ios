@@ -51,3 +51,6 @@ playground.xcworkspace
 *.xcconfig
 !Debug.xcconfig
 !Release.xcconfig
+
+# Claude Code ralph-loop state
+.claude/ralph-loop.local.md

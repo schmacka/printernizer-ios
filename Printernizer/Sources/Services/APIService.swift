@@ -126,6 +126,18 @@ struct PrinterDetails {
     let bedTemp: Double
     let bedTarget: Double
     let statistics: PrinterStatistics?
+    let recentJobs: [RecentJobSummary]
+    let isConnected: Bool
+}
+
+/// Recent job entry shown on the printer detail screen.
+struct RecentJobSummary: Identifiable {
+    let id: String
+    let fileName: String
+    let status: String
+    let progress: Int?
+    let startedAt: String?
+    let printTimeMinutes: Int?
 }
 
 struct PrinterStatistics {
@@ -237,13 +249,26 @@ final class APIService: ObservableObject {
             totalMaterialKg: response.statistics.totalMaterialKg
         )
 
+        let recentJobs = response.recentJobs.map { job in
+            RecentJobSummary(
+                id: job.id,
+                fileName: job.fileName,
+                status: job.status,
+                progress: job.progress,
+                startedAt: job.startedAt,
+                printTimeMinutes: job.printTimeMinutes
+            )
+        }
+
         return PrinterDetails(
             currentJob: currentJob,
             hotendTemp: hotendTemp,
             hotendTarget: hotendTarget,
             bedTemp: bedTemp,
             bedTarget: bedTarget,
-            statistics: stats
+            statistics: stats,
+            recentJobs: recentJobs,
+            isConnected: response.connection.isConnected
         )
     }
 

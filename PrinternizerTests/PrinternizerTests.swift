@@ -349,3 +349,98 @@ final class APIDecodingTests: XCTestCase {
         )
     }
 }
+
+final class PrinterServiceModelTests: XCTestCase {
+
+    func testDiscoveryResultDecoding() throws {
+        let json = """
+        {
+            "discovered": [
+                {
+                    "type": "bambu_lab",
+                    "name": "Bambu A1",
+                    "ip": "192.168.1.50",
+                    "hostname": null,
+                    "model": "A1",
+                    "serial": "0309CA123456",
+                    "discovered_at": "2026-07-18T10:00:00",
+                    "already_added": false
+                }
+            ],
+            "scan_duration_ms": 10432.5,
+            "errors": ["SSDP library not available - Bambu Lab discovery disabled"],
+            "timestamp": "2026-07-18T10:00:10"
+        }
+        """.data(using: .utf8)!
+
+        let result = try APIConfiguration.makeDecoder().decode(DiscoveryResult.self, from: json)
+        XCTAssertEqual(result.discovered.count, 1)
+        let printer = try XCTUnwrap(result.discovered.first)
+        XCTAssertEqual(printer.ip, "192.168.1.50")
+        XCTAssertEqual(printer.serial, "0309CA123456")
+        XCTAssertEqual(printer.alreadyAdded, false)
+        XCTAssertEqual(printer.printerType, .bambuLab)
+        XCTAssertEqual(result.errors?.count, 1)
+    }
+
+    func testPrinterConfigResponseDecoding() throws {
+        let json = """
+        {
+            "id": "printer-1",
+            "name": "Werkstatt A1",
+            "printer_type": "bambu_lab",
+            "status": "online",
+            "ip_address": "192.168.1.50",
+            "connection_config": {
+                "ip_address": "192.168.1.50",
+                "api_key": null,
+                "access_code": "12345678",
+                "serial_number": "0309CA123456",
+                "webcam_url": null
+            },
+            "location": "Werkstatt",
+            "description": null,
+            "is_enabled": true,
+            "last_seen": "2026-07-18T09:59:00",
+            "created_at": "2026-01-01T00:00:00",
+            "updated_at": "2026-01-01T00:00:00"
+        }
+        """.data(using: .utf8)!
+
+        let printer = try APIConfiguration.makeDecoder().decode(PrinterConfigResponse.self, from: json)
+        XCTAssertEqual(printer.id, "printer-1")
+        XCTAssertEqual(printer.printerType, "bambu_lab")
+        XCTAssertEqual(printer.connectionConfig?.accessCode, "12345678")
+        XCTAssertEqual(printer.connectionConfig?.serialNumber, "0309CA123456")
+        XCTAssertEqual(printer.isEnabled, true)
+    }
+
+    func testCreateRequestEncodesSnakeCase() throws {
+        let request = PrinterCreateRequest(
+            name: "Test",
+            printerType: .prusaCore,
+            connectionConfig: PrinterConnectionConfig(
+                ipAddress: "10.0.0.5",
+                apiKey: "secret",
+                accessCode: nil,
+                serialNumber: nil,
+                webcamUrl: nil
+            ),
+            location: nil,
+            description: nil
+        )
+
+        let data = try APIConfiguration.makeEncoder().encode(request)
+        let object = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        XCTAssertEqual(object["printer_type"] as? String, "prusa_core")
+        let config = try XCTUnwrap(object["connection_config"] as? [String: Any])
+        XCTAssertEqual(config["ip_address"] as? String, "10.0.0.5")
+        XCTAssertEqual(config["api_key"] as? String, "secret")
+    }
+
+    func testPrinterTypeDisplayNames() {
+        XCTAssertEqual(PrinterType.bambuLab.displayName, "Bambu Lab")
+        XCTAssertEqual(PrinterType.prusaCore.displayName, "Prusa")
+        XCTAssertEqual(PrinterType.octoprint.displayName, "OctoPrint")
+    }
+}
