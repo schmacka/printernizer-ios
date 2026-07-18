@@ -158,6 +158,15 @@ struct SystemInfo: Decodable {
     let uptimeSeconds: Double?
 }
 
+/// Update availability from GET /api/v1/update-check.
+struct UpdateCheckResult: Decodable {
+    let currentVersion: String?
+    let latestVersion: String?
+    let updateAvailable: Bool?
+    let releaseUrl: String?
+    let checkFailed: Bool?
+}
+
 enum APIError: LocalizedError {
     case invalidURL
     case invalidResponse
@@ -286,6 +295,15 @@ final class APIService: ObservableObject {
 
     func fetchSystemInfo() async throws -> SystemInfo {
         try await request("system/info")
+    }
+
+    func checkForUpdates() async throws -> UpdateCheckResult {
+        try await request("update-check")
+    }
+
+    /// Triggers a server-side backup; returns the backup path.
+    func createBackup() async throws {
+        try await postCommand("system/backup")
     }
 
     func testConnection() async throws -> Bool {

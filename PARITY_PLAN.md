@@ -80,7 +80,7 @@ Endpoints: `GET /timelapses`, `/timelapses/stats`, `GET /timelapses/{id}/video`,
 - [ ] 3.2 Settings management: `Services/SettingsService.swift` — `GET/PUT /settings/application` form, gcode-optimization, ffmpeg-check row
 - [x] 3.3 Notification channels: `NotificationChannelService` + `NotificationChannelsView` in Settings — Discord/Slack/ntfy CRUD, per-event subscriptions, swipe-to-test/delete (local `NotificationService` untouched)
 - [x] 3.4 Search: `Services/SearchService.swift` + `Views/More/SearchView.swift` — unified search over library files and ideas, grouped results (suggestions/history endpoints wrapped in service, UI on submit)
-- [ ] 3.5 Tools links + System (backup trigger, update-check, usage stats)
+- [x] 3.5 Tools & System: `ToolsView` (curated links w/ category filter, mirrors web TOOLS_DATA); Settings gains Create Server Backup + Check for Updates (release link when available). Usage-stats admin dashboard skipped as desktop-only
 - [ ] 3.6 Debug/logs viewer (`GET/DELETE /logs/*`, `/debug/*`) behind developer-mode toggle
 - [ ] 3.7 Camera extras: MJPEG stream parsing (fall back to snapshot polling), diagnostics screen, external webcam URL in printer form
 - [ ] 3.8 Ideas share extension (separate target, App Group for server URL)

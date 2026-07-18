@@ -9,6 +9,7 @@ enum MoreDestination: Hashable {
     case timelapses
     case files
     case generator
+    case tools
     case settings
 }
 
@@ -40,6 +41,10 @@ struct MoreView: View {
                     NavigationLink(value: MoreDestination.generator) {
                         Label("Generator", systemImage: "cube.transparent")
                     }
+
+                    NavigationLink(value: MoreDestination.tools) {
+                        Label("Tools", systemImage: "wrench.and.screwdriver")
+                    }
                 }
 
                 Section {
@@ -63,6 +68,8 @@ struct MoreView: View {
                     FileListView()
                 case .generator:
                     GeneratorView()
+                case .tools:
+                    ToolsView()
                 case .settings:
                     SettingsView()
                 }

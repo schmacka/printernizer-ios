@@ -14,6 +14,10 @@ struct SettingsView: View {
     @State private var connectionStatus: ConnectionStatus?
     @State private var showQRScanner = false
     @State private var serverInfo: SystemInfo?
+    @State private var updateCheck: UpdateCheckResult?
+    @State private var isCheckingUpdate = false
+    @State private var isBackingUp = false
+    @State private var systemMessage: String?
 
     /// Local draft of the server URL. The TextField edits this instead of
     /// the stored value so that typing doesn't publish through APIService
@@ -112,6 +116,55 @@ struct SettingsView: View {
                 } label: {
                     Label("Application Settings", systemImage: "gearshape.2")
                 }
+
+                Button {
+                    Task { await createBackup() }
+                } label: {
+                    if isBackingUp {
+                        HStack {
+                            ProgressView()
+                            Text("Creating Backup…")
+                        }
+                    } else {
+                        Label("Create Server Backup", systemImage: "externaldrive.badge.timemachine")
+                    }
+                }
+                .disabled(isBackingUp)
+
+                Button {
+                    Task { await checkForUpdates() }
+                } label: {
+                    if isCheckingUpdate {
+                        HStack {
+                            ProgressView()
+                            Text("Checking for Updates…")
+                        }
+                    } else {
+                        Label("Check for Updates", systemImage: "arrow.down.circle")
+                    }
+                }
+                .disabled(isCheckingUpdate)
+
+                if let update = updateCheck {
+                    if update.updateAvailable == true {
+                        if let urlString = update.releaseUrl, let url = URL(string: urlString) {
+                            Link(destination: url) {
+                                Label("Update available: \(update.latestVersion ?? "new version")", systemImage: "sparkles")
+                                    .foregroundStyle(.blue)
+                            }
+                        } else {
+                            Label("Update available: \(update.latestVersion ?? "new version")", systemImage: "sparkles")
+                        }
+                    } else if update.checkFailed == true {
+                        Text("Update check failed")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Label("Backend is up to date", systemImage: "checkmark.circle")
+                            .font(.caption)
+                            .foregroundStyle(.green)
+                    }
+                }
             }
 
             Section("Refresh") {
@@ -163,6 +216,38 @@ struct SettingsView: View {
                 connectionStatus = nil
                 reconnectWebSocket()
             }
+        }
+        .alert(
+            "Server",
+            isPresented: Binding(
+                get: { systemMessage != nil },
+                set: { if !$0 { systemMessage = nil } }
+            )
+        ) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(systemMessage ?? "")
+        }
+    }
+
+    private func createBackup() async {
+        isBackingUp = true
+        defer { isBackingUp = false }
+
+        do {
+            try await apiService.createBackup()
+            systemMessage = "Backup created on the server."
+        } catch {
+            systemMessage = "Backup failed: \(error.localizedDescription)"
+        }
+    }
+
+    private func checkForUpdates() async {
+        isCheckingUpdate = true
+        defer { isCheckingUpdate = false }
+        updateCheck = try? await apiService.checkForUpdates()
+        if updateCheck == nil {
+            systemMessage = "Update check failed."
         }
     }
 
