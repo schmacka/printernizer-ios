@@ -77,6 +77,14 @@ struct PrinterDetailView: View {
                 Spacer()
 
                 NavigationLink {
+                    CameraDiagnosticsView(printerId: printer.id)
+                } label: {
+                    Image(systemName: "stethoscope")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                NavigationLink {
                     SnapshotGalleryView(printerId: printer.id)
                 } label: {
                     HStack(spacing: 4) {

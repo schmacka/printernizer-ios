@@ -34,6 +34,21 @@ struct SnapshotResponse: Codable, Identifiable {
     let printerType: String?
 }
 
+/// Camera troubleshooting report from GET /printers/{id}/camera/diagnostics.
+struct CameraDiagnostics: Codable {
+    struct DiagnosticTest: Codable {
+        let test: String?
+        let passed: Bool?
+        let details: String?
+    }
+
+    let printerId: String?
+    let printerType: String?
+    let printerIp: String?
+    let tests: [String: DiagnosticTest]?
+    let error: String?
+}
+
 struct SnapshotCreateRequest: Codable {
     let printerId: String
     let jobId: Int?
@@ -77,6 +92,27 @@ final class CameraService: ObservableObject {
         }
 
         return try decoder.decode(CameraStatus.self, from: data)
+    }
+
+    /// URL of the MJPEG stream endpoint for live viewing.
+    func streamURL(printerId: String) -> URL? {
+        APIConfiguration.url("printers/\(printerId)/camera/stream")
+    }
+
+    /// Camera troubleshooting report from the backend.
+    func getDiagnostics(printerId: String) async throws -> CameraDiagnostics {
+        guard let url = APIConfiguration.url("printers/\(printerId)/camera/diagnostics") else {
+            throw CameraError.invalidURL
+        }
+
+        let (data, response) = try await session.data(from: url)
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw CameraError.serverError
+        }
+
+        return try decoder.decode(CameraDiagnostics.self, from: data)
     }
 
     // MARK: - Camera Preview

@@ -6,12 +6,18 @@ struct CameraPreviewView: View {
 
     @StateObject private var viewModel = CameraPreviewViewModel()
     @State private var showSnapshotConfirmation = false
+    @State private var useStream = false
+
+    private let cameraService = CameraService()
 
     var body: some View {
         VStack(spacing: 16) {
             // Preview Image
             ZStack {
-                if let image = viewModel.previewImage {
+                if useStream, let streamURL = cameraService.streamURL(printerId: printerId) {
+                    MJPEGStreamView(url: streamURL)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                } else if let image = viewModel.previewImage {
                     Image(uiImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
@@ -55,6 +61,24 @@ struct CameraPreviewView: View {
                 }
                 .toggleStyle(.button)
                 .tint(viewModel.autoRefreshEnabled ? .blue : .gray)
+                .disabled(useStream)
+
+                // MJPEG stream toggle (internal printer cameras only)
+                if cameraStatus.hasCamera {
+                    Toggle(isOn: $useStream) {
+                        Label("Stream", systemImage: "play.tv")
+                            .font(.caption)
+                    }
+                    .toggleStyle(.button)
+                    .tint(useStream ? .blue : .gray)
+                    .onChange(of: useStream) { _, streaming in
+                        if streaming {
+                            viewModel.stopPreview()
+                        } else {
+                            Task { await viewModel.startPreview() }
+                        }
+                    }
+                }
 
                 Spacer()
 
