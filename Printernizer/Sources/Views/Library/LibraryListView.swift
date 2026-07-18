@@ -1,10 +1,24 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct LibraryListView: View {
     @StateObject private var viewModel = LibraryListViewModel()
     @State private var searchText = ""
     @State private var selectedFile: LibraryFile?
     @State private var roleFilter: LibraryRoleFilter = .all
+    @State private var showFileImporter = false
+
+    /// File types the backend accepts for library uploads.
+    private static let uploadTypes: [UTType] = {
+        var types: [UTType] = []
+        for ext in ["stl", "3mf", "gcode", "bgcode", "obj", "ply"] {
+            if let type = UTType(filenameExtension: ext) {
+                types.append(type)
+            }
+        }
+        types.append(.data)
+        return types
+    }()
 
     private let columns = [
         GridItem(.adaptive(minimum: 150, maximum: 200), spacing: 12)
@@ -35,6 +49,19 @@ struct LibraryListView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showFileImporter = true
+                    } label: {
+                        if viewModel.isUploading {
+                            ProgressView()
+                        } else {
+                            Image(systemName: "square.and.arrow.up")
+                        }
+                    }
+                    .disabled(viewModel.isUploading)
+                }
+
+                ToolbarItem(placement: .topBarTrailing) {
                     Menu {
                         ForEach(LibraryRoleFilter.allCases, id: \.self) { filter in
                             Button {
@@ -50,6 +77,15 @@ struct LibraryListView: View {
                     } label: {
                         Label("Filter", systemImage: "line.3.horizontal.decrease.circle")
                     }
+                }
+            }
+            .fileImporter(
+                isPresented: $showFileImporter,
+                allowedContentTypes: Self.uploadTypes,
+                allowsMultipleSelection: true
+            ) { result in
+                if case .success(let urls) = result {
+                    Task { await viewModel.upload(urls: urls) }
                 }
             }
             .refreshable {
@@ -214,6 +250,7 @@ struct LibraryFileCardView: View {
 final class LibraryListViewModel: ObservableObject {
     @Published var files: [LibraryFile] = []
     @Published var isLoading = false
+    @Published var isUploading = false
     @Published var showError = false
     @Published var errorMessage = ""
 
@@ -271,6 +308,39 @@ final class LibraryListViewModel: ObservableObject {
         }
 
         isLoading = false
+    }
+
+    /// Uploads picked files. Security-scoped access is required for
+    /// URLs coming from the document picker.
+    func upload(urls: [URL]) async {
+        guard !urls.isEmpty else { return }
+        isUploading = true
+        defer { isUploading = false }
+
+        var payload: [(filename: String, data: Data)] = []
+        for url in urls {
+            let accessing = url.startAccessingSecurityScopedResource()
+            defer {
+                if accessing { url.stopAccessingSecurityScopedResource() }
+            }
+            do {
+                let data = try Data(contentsOf: url)
+                payload.append((filename: url.lastPathComponent, data: data))
+            } catch {
+                errorMessage = "Could not read \(url.lastPathComponent)"
+                showError = true
+            }
+        }
+
+        guard !payload.isEmpty else { return }
+
+        do {
+            try await libraryService.uploadFiles(payload)
+            await reload()
+        } catch {
+            errorMessage = error.localizedDescription
+            showError = true
+        }
     }
 
     func deleteFile(_ file: LibraryFile) async {

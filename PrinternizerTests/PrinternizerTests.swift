@@ -643,3 +643,64 @@ final class IdeaModelTests: XCTestCase {
         XCTAssertEqual(idea.ideaStatus, .idea)
     }
 }
+
+final class LibraryPowerFeatureTests: XCTestCase {
+
+    func testMultipartFormDataStructure() {
+        var form = MultipartFormData()
+        form.addField(name: "is_business", value: "false")
+        form.addFile(name: "files", filename: "benchy.stl", data: Data("solid benchy".utf8))
+        let body = String(decoding: form.finalized(), as: UTF8.self)
+
+        XCTAssertTrue(body.contains("Content-Disposition: form-data; name=\"is_business\""))
+        XCTAssertTrue(body.contains("name=\"files\"; filename=\"benchy.stl\""))
+        XCTAssertTrue(body.contains("solid benchy"))
+        XCTAssertTrue(body.hasSuffix("--\(form.boundary)--\r\n"))
+    }
+
+    func testTagListDecoding() throws {
+        let json = """
+        {
+            "tags": [
+                {"id": "tag-1", "name": "vase", "color": "#6b7280", "description": null, "usage_count": 4, "created_at": "2026-01-01", "updated_at": "2026-01-01"}
+            ],
+            "total": 1
+        }
+        """.data(using: .utf8)!
+
+        let response = try APIConfiguration.makeDecoder().decode(TagListResponse.self, from: json)
+        XCTAssertEqual(response.tags.first?.name, "vase")
+        XCTAssertEqual(response.tags.first?.usageCount, 4)
+    }
+
+    func testSlicingJobDecoding() throws {
+        let json = """
+        {
+            "id": "sj-1",
+            "file_checksum": "abc",
+            "filename": "benchy.stl",
+            "slicer_id": "prusaslicer",
+            "slicer_name": "PrusaSlicer",
+            "profile_id": "p-1",
+            "profile_name": "0.2mm Quality",
+            "target_printer_id": null,
+            "status": "completed",
+            "priority": 5,
+            "progress": 100,
+            "estimated_print_time": 5400,
+            "filament_used": 13.5,
+            "error_message": null,
+            "retry_count": 0,
+            "auto_upload": false,
+            "auto_start": false,
+            "created_at": "2026-07-18T10:00:00",
+            "updated_at": "2026-07-18T10:05:00"
+        }
+        """.data(using: .utf8)!
+
+        let job = try APIConfiguration.makeDecoder().decode(SlicingJobResponse.self, from: json)
+        XCTAssertTrue(job.isFinished)
+        XCTAssertTrue(job.isSuccessful)
+        XCTAssertEqual(job.estimatedPrintTime, 5400)
+    }
+}

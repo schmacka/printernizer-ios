@@ -17,6 +17,9 @@ struct LibraryFileDetailView: View {
     @State private var printers: [Printer] = []
     @State private var isPrinting = false
     @State private var printResult: PrintResult?
+    @State private var showTagEditor = false
+    @State private var showSliceSheet = false
+    @State private var isReprocessing = false
 
     private let libraryService = LibraryService()
 
@@ -62,6 +65,20 @@ struct LibraryFileDetailView: View {
         }
         .task {
             await loadDetails()
+        }
+        .sheet(isPresented: $showTagEditor) {
+            TagEditorView(checksum: file.checksum) {
+                Task {
+                    tags = (try? await libraryService.getTags(checksum: file.checksum)) ?? []
+                }
+            }
+        }
+        .sheet(isPresented: $showSliceSheet) {
+            SliceSheetView(file: file) {
+                Task {
+                    printFiles = (try? await libraryService.getPrintFiles(checksum: file.checksum)) ?? []
+                }
+            }
         }
         .confirmationDialog("Delete File?", isPresented: $showDeleteConfirmation) {
             Button("Delete", role: .destructive) {
@@ -160,11 +177,14 @@ struct LibraryFileDetailView: View {
                 LabeledContent("Added", value: date)
             }
 
-            if !tags.isEmpty {
+            Button {
+                showTagEditor = true
+            } label: {
                 HStack(alignment: .top) {
                     Text("Tags")
+                        .foregroundStyle(.primary)
                     Spacer()
-                    Text(tags.map(\.name).joined(separator: ", "))
+                    Text(tags.isEmpty ? "Add…" : tags.map(\.name).joined(separator: ", "))
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.trailing)
                 }
@@ -178,7 +198,7 @@ struct LibraryFileDetailView: View {
                 ProgressView()
                     .frame(maxWidth: .infinity)
             } else if printFiles.isEmpty {
-                Text("No sliced print files yet. Slice this model in the Printernizer web app.")
+                Text("No sliced print files yet. Use Slice below to create one.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             } else {
@@ -242,6 +262,28 @@ struct LibraryFileDetailView: View {
                 .disabled(isPrinting)
             }
 
+            if file.isModel {
+                Button {
+                    showSliceSheet = true
+                } label: {
+                    Label("Slice", systemImage: "scissors")
+                }
+            }
+
+            Button {
+                Task { await reprocessFile() }
+            } label: {
+                if isReprocessing {
+                    HStack {
+                        ProgressView()
+                        Text("Reprocessing…")
+                    }
+                } else {
+                    Label("Reprocess Metadata", systemImage: "arrow.triangle.2.circlepath")
+                }
+            }
+            .disabled(isReprocessing)
+
             if let url = libraryService.downloadURL(checksum: file.checksum) {
                 ShareLink(item: url) {
                     Label("Share Download Link", systemImage: "square.and.arrow.up")
@@ -254,6 +296,12 @@ struct LibraryFileDetailView: View {
                 Label("Delete", systemImage: "trash")
             }
         }
+    }
+
+    private func reprocessFile() async {
+        isReprocessing = true
+        defer { isReprocessing = false }
+        try? await libraryService.reprocess(checksum: file.checksum)
     }
 
     // MARK: - Actions

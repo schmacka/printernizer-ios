@@ -89,6 +89,18 @@ private struct FileTagsResponse: Codable {
     let tags: [LibraryTag]
 }
 
+/// Library statistics from GET /library/statistics.
+struct LibraryStatistics: Codable {
+    let totalFiles: Int?
+    let totalSize: Int?
+    let filesWithThumbnails: Int?
+    let filesAnalyzed: Int?
+    let availableFiles: Int?
+    let processingFiles: Int?
+    let errorFiles: Int?
+    let totalMaterialCost: Double?
+}
+
 // MARK: - Library Service
 
 @MainActor
@@ -203,6 +215,55 @@ final class LibraryService: ObservableObject {
 
         let (_, response) = try await session.data(for: request)
         try validate(response)
+    }
+
+    /// Uploads files into the library (multipart, same endpoint the
+    /// web app's drag & drop uses). Files are (filename, data) pairs.
+    func uploadFiles(_ files: [(filename: String, data: Data)], isBusiness: Bool = false, notes: String? = nil) async throws {
+        guard let url = APIConfiguration.url("files/upload") else {
+            throw LibraryError.invalidURL
+        }
+
+        var form = MultipartFormData()
+        for file in files {
+            form.addFile(name: "files", filename: file.filename, data: file.data)
+        }
+        form.addField(name: "is_business", value: isBusiness ? "true" : "false")
+        if let notes, !notes.isEmpty {
+            form.addField(name: "notes", value: notes)
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue(form.contentType, forHTTPHeaderField: "Content-Type")
+        request.httpBody = form.finalized()
+        request.timeoutInterval = 300
+
+        let (_, response) = try await session.data(for: request)
+        try validate(response)
+    }
+
+    /// Re-runs thumbnail/metadata extraction for a file.
+    func reprocess(checksum: String) async throws {
+        guard let url = APIConfiguration.url("library/files/\(checksum)/reprocess") else {
+            throw LibraryError.invalidURL
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+
+        let (_, response) = try await session.data(for: request)
+        try validate(response)
+    }
+
+    func statistics() async throws -> LibraryStatistics {
+        guard let url = APIConfiguration.url("library/statistics") else {
+            throw LibraryError.invalidURL
+        }
+
+        let (data, response) = try await session.data(from: url)
+        try validate(response)
+        return try decoder.decode(LibraryStatistics.self, from: data)
     }
 
     func deleteFile(checksum: String) async throws {

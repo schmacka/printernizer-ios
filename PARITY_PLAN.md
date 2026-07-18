@@ -63,10 +63,11 @@ Endpoints: `/ideas` CRUD, `PATCH /ideas/{id}/status`, `POST /ideas/import`, `GET
 
 ## Phase 2.2 — Library power features (upload, tags, slicing)
 Endpoints: `POST /files/upload` (multipart), `POST /library/files/{checksum}/reprocess`, `GET /library/statistics`; `/tags` CRUD + assign/remove; `GET /slicing`, `GET /slicing/{id}/profiles`, `POST /slicing/library/{checksum}/slice`, `POST /slicing/slice-and-print`, `GET /slicing/jobs/{id}`
-- [ ] `MultipartFormData` helper + `LibraryService.upload` via `fileImporter` (remember `startAccessingSecurityScopedResource`)
-- [ ] `Services/TagService.swift`; editable tag chips in `LibraryFileDetailView` (create/assign/remove)
-- [ ] `Services/SlicingService.swift`; Slice action in file detail → profile picker → poll `/slicing/jobs/{id}` with progress sheet; Slice & Print
-- [ ] Surface existing `listFiles(fileType:sourceType:hasThumbnail:)` filters as a filter sheet; reprocess button; `LibraryStatsView`
+- [x] `MultipartFormData` helper + `LibraryService.uploadFiles` via `fileImporter` (multi-select, security-scoped access)
+- [x] `Services/TagService.swift`; tags row in file detail opens `TagEditorView` (create/assign/remove with toggle list)
+- [x] `Services/SlicingService.swift`; Slice action on models → `SliceSheetView` (slicer + profile pickers, optional printer for slice & print, 2s job polling with progress)
+- [x] Reprocess-metadata action in file detail; `LibraryService.statistics` available
+- [ ] (deferred to 3.x) surface fileType/sourceType/hasThumbnail server-side filters and a stats screen — client-side role filter already covers the common case
 
 ## Phase 2.3 — Timelapses
 Endpoints: `GET /timelapses`, `/timelapses/stats`, `GET /timelapses/{id}/video`, `POST /{id}/process`, `DELETE /{id}`, `PATCH /{id}/{link,pin}`, `POST /timelapses/bulk-delete`
