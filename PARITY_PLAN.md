@@ -77,7 +77,7 @@ Endpoints: `GET /timelapses`, `/timelapses/stats`, `GET /timelapses/{id}/video`,
 
 ## Phase 3 — Long tail (in order; each independently shippable)
 - [x] 3.1 Files & downloads: `Services/FileService.swift` + `Views/Files/FileListView.swift` — printer file list (status filter, search, sync, download-to-server, delete) and watch folder management (add/remove/toggle/rescan). Download endpoint blocks until complete, so no progress polling needed; G-code analysis view deferred (enhanced metadata already shown in Library)
-- [ ] 3.2 Settings management: `Services/SettingsService.swift` — `GET/PUT /settings/application` form, gcode-optimization, ffmpeg-check row
+- [x] 3.2 Settings management: `ServerSettingsService` + `ServerSettingsView` (from Settings) — log level, monitoring/timeout, VAT rate, auto-create jobs, G-code optimization, uploads, library toggles, timelapse + ffmpeg-check row. Server path settings intentionally left to web/desktop
 - [x] 3.3 Notification channels: `NotificationChannelService` + `NotificationChannelsView` in Settings — Discord/Slack/ntfy CRUD, per-event subscriptions, swipe-to-test/delete (local `NotificationService` untouched)
 - [x] 3.4 Search: `Services/SearchService.swift` + `Views/More/SearchView.swift` — unified search over library files and ideas, grouped results (suggestions/history endpoints wrapped in service, UI on submit)
 - [x] 3.5 Tools & System: `ToolsView` (curated links w/ category filter, mirrors web TOOLS_DATA); Settings gains Create Server Backup + Check for Updates (release link when available). Usage-stats admin dashboard skipped as desktop-only
