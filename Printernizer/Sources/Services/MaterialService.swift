@@ -35,7 +35,11 @@ struct MaterialStats: Codable {
     let remainingValue: Double?
     let byColor: [String: Int]?
     let lowStock: [String]?
-    let consumption30d: Double?
+    /// Capital `D` is deliberate: `.convertFromSnakeCase` capitalizes each
+    /// component after an underscore, and `"30d".capitalized` is `"30D"`, so
+    /// the backend's `consumption_30d` arrives as `consumption30D`. Spelling
+    /// this with a lowercase `d` makes it silently decode to nil.
+    let consumption30D: Double?
 }
 
 struct MaterialTypes: Codable {

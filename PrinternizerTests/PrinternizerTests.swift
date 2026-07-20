@@ -474,7 +474,7 @@ final class MaterialModelTests: XCTestCase {
         XCTAssertEqual(stats.totalSpools, 5)
         XCTAssertEqual(stats.lowStock?.count, 2)
         XCTAssertEqual(stats.byColor?["RED"], 3)
-        XCTAssertEqual(stats.consumption30d, 0.6)
+        XCTAssertEqual(stats.consumption30D, 0.6)
     }
 
     func testConsumptionHistoryDecoding() throws {
