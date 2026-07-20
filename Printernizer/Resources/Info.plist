@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- The backend is a FastAPI server on the user's LAN, addressed over plain
+	     HTTP (APIConfiguration prepends http:// to bare hosts). NSAllowsLocalNetworking
+	     permits cleartext to .local, unqualified hostnames, and private/link-local
+	     IP ranges only — public hosts still require HTTPS. -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<!-- The app uses only standard system HTTPS/crypto, which qualifies for the
+	     export-compliance exemption. Declaring it here stops App Store Connect
+	     asking on every upload. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+</dict>
+</plist>
